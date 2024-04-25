@@ -3,6 +3,7 @@ import sqlite3
 class Database():
     def __init__(self):
         self.conn = sqlite3.connect("bingoDB.db")
+        self.createDatabase()
 
     def createDatabase(self):
         cur = self.conn.cursor()
@@ -29,22 +30,45 @@ class Database():
         
         self.conn.commit()
 
-    def addCard(self, colour, row1, row2, row3, row4, row5):
+    def addCard(self, card):
         cur = self.conn.cursor()
 
         cur.execute("INSERT INTO Cards (COLOUR, ROW1, ROW2, ROW3, ROW4, ROW5) VALUES (?,?,?,?,?,?)",
-                    (colour, row1, row2, row3, row4, row5))
+                    (card.colour, card.rows[0], card.rows[1], card.rows[2], card.rows[3], card.rows[4]))
         
         self.conn.commit()
         
-    def addWinCondition(self, name, row1, row2, row3, row4, row5):
+    def addWinCondition(self, winCondition):
         cur = self.conn.cursor()
 
-        if name is None:
+        if winCondition.name is None:
             cur.execute("INSERT INTO WinConditions (ROW1, ROW2, ROW3, ROW4, ROW5) VALUES (?,?,?,?,?)",
-                        (row1, row2, row3, row4, row5))
+                        (winCondition.rows[0], winCondition.rows[1], winCondition.rows[2], winCondition.rows[3], winCondition.rows[4]))
         else:
             cur.execute("INSERT INTO WinConditions (NAME, ROW1, ROW2, ROW3, ROW4, ROW5) VALUES (?,?,?,?,?,?)",
-                        (name, row1, row2, row3, row4, row5))
+                        (winCondition.name, winCondition.rows[0], winCondition.rows[1], winCondition.rows[2], winCondition.rows[3], winCondition.rows[4]))
             
         self.conn.commit()
+
+class Card():
+    def __init__(self, name, row1, row2, row3, row4, row5):
+        self.name = name
+        self.rows = [row1, row2, row3, row4, row5]
+
+    def setName(self, name):
+        self.name = name
+    
+    def getName(self):
+        return self.name
+    
+    def setRow(self, rowNum, newRow):
+        self.rows[rowNum] = newRow
+
+    def getRow(self, rowNum):
+        return self.rows[rowNum]
+    
+if __name__ == '__main__':
+    db = Database()
+    newBingoCard = Card("red", "1,16,31,46,61", "2,17,32,47,62", "3,18,33,48,63", "4,19,34,49,64", "5,20,35,50,65")
+    newWin = Card("full", "1,1,1,1,1", "1,1,1,1,1", "1,1,1,1,1", "1,1,1,1,1", "1,1,1,1,1")
+    db.addCard(newBingoCard)
