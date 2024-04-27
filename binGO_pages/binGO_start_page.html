@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: black;
+        }
+
+        .start_page_title_div {
+            background-color: antiquewhite;
+            border-radius: 20px;
+            width: 100%;
+        }
+
+        .title_word {
+            animation: color_animation 4s linear infinite;
+        }
+
+        .title_word_1 {
+            --color_1: red;
+            --color_2: blue;
+        }
+
+        .title_word_2 {
+            --color_1: blue;
+            --color_2: red;
+        }
+
+        @keyframes color_animation {
+            0%    {color: var(--color_1)}
+            50%   {color: var(--color_2)}
+            100%  {color: var(--color_1)}
+            }
+
+    </style>
+    <title>BinGO</title>
+</head>
+<body>
+    <div class="start_page_title_div">
+        <h1 class="title_word title_word_1" style="display: inline-block">Bin</h1><h1 class="title_word title_word_2" style="display: inline-block">GO</h1>
+    </div>
+</body>
+</html>
