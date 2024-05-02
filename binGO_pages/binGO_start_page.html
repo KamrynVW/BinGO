@@ -14,18 +14,29 @@
             width: 100%;
         }
 
+        .start_page_buttons_lower_div {
+            width: 100%;
+        }
+
+        .start_page_buttons_upper_div {
+            width: 100%;
+        }
+
         .title_word {
             animation: color_animation 4s linear infinite;
+            font: bold;
+            font-size: 60px;
+            font-family: monospace;
         }
 
         .title_word_1 {
-            --color_1: red;
-            --color_2: blue;
+            --color_1: black;
+            --color_2: rgb(66, 148, 236);
         }
 
         .title_word_2 {
-            --color_1: blue;
-            --color_2: red;
+            --color_1: rgb(66, 148, 236);
+            --color_2: black;
         }
 
         @keyframes color_animation {
@@ -39,7 +50,53 @@
 </head>
 <body>
     <div class="start_page_title_div">
-        <h1 class="title_word title_word_1" style="display: inline-block">Bin</h1><h1 class="title_word title_word_2" style="display: inline-block">GO</h1>
+        <center><h1 class="title_word title_word_1" style="display: inline-block">Bin</h1><h1 class="title_word title_word_2" style="display: inline-block">GO</h1></center>
     </div>
+
+    <form id="form" action="binGO_play.html" method="post">
+        <input id="colour" type="hidden" name="colour"/>
+        <div class="start_page_buttons_div">
+            <div class="start_page_buttons_upper_div">
+                <center>
+                    <button class="start_page_button" onclick="submitPink()">Pink</button>
+                    <button class="start_page_button" onclick="submitGreen()">Green</button>
+                    <button class="start_page_button" onclick="submitYellow()">Yellow</button>
+                </center>
+            </div>
+            <div class="start_page_buttons_lower_div">
+                <center>
+                    <button class="start_page_button" onclick="submitBlue()">Blue</button>
+                    <button class="start_page_button" onclick="submitOrange()">Orange</button>
+                </center>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        function submitPink() {
+            document.getElementById("colour").value = 1
+            document.getElementById("form").submit()
+        }
+
+        function submitGreen() {
+            document.getElementById("colour").value = 2
+            document.getElementById("form").submit()
+        }
+
+        function submitYellow() {
+            document.getElementById("colour").value = 3
+            document.getElementById("form").submit()
+        }
+
+        function submitBlue() {
+            document.getElementById("colour").value = 4
+            document.getElementById("form").submit()
+        }
+
+        function submitOrange() {
+            document.getElementById("colour").value = 5
+            document.getElementById("form").submit()
+        }
+    </script>
 </body>
 </html>

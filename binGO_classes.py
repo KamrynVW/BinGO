@@ -98,6 +98,9 @@ class Database():
 
         cur.execute("SELECT CARDID FROM Cards WHERE COLOUR = ?", (colour,))
         data = cur.fetchall()
+        if len(data) == 0:
+            cur.close()
+            return None
         
         cardIDs = []
 
@@ -163,6 +166,18 @@ class Database():
         cur.close()
         return win
     
+    def getWinIdByName(self, name):
+        cur = self.conn.cursor()
+
+        cur.execute("SELECT WINID FROM WinConditions WHERE NAME = ?", (name,))
+        data = cur.fetchone()
+        cur.close()
+
+        if data is not None:
+            return data[0]
+        else:
+            return None
+    
 class Card():
     def __init__(self, colour, id1, id2, col1, col2, col3, col4, col5):
         self.colour = colour
@@ -183,6 +198,59 @@ class Card():
 
         return result
 
+    def flipTileBit(self, value, winCondition):
+        i = 0
+        didFlipBit = 0
+        # B
+        if value >= 1 and value <= 15:
+            for tileValue in self.bCol:
+                if tileValue[0] == value and winCondition.col[0][i] == 1:
+                    tileValue[1] = 1
+                    didFlipBit = 1
+                
+                i += 1
+
+        # I
+        elif value >= 16 and value <= 30:
+            for tileValue in self.iCol:
+                if tileValue[0] == value and winCondition.col[1][i] == 1:
+                    tileValue[1] = 1
+                    didFlipBit = 1
+
+                i += 1
+
+        # N
+        elif value >= 31 and value <= 45:
+            for tileValue in self.nCol:
+                if tileValue[0] == value and winCondition.col[2][i] == 1:
+                    tileValue[1] = 1
+                    didFlipBit = 1
+
+                i += 1
+
+        # G
+        elif value >= 46 and value <= 60:
+            for tileValue in self.gCol:
+                if tileValue[0] == value and winCondition.col[3][i] == 1:
+                    tileValue[1] = 1
+                    didFlipBit = 1
+
+                i += 1
+
+        # O
+        elif value >= 61 and value <= 75:
+            for tileValue in self.oCol:
+                if tileValue[0] == value and winCondition.col[4][i] == 1:
+                    tileValue[1] = 1
+                    didFlipBit = 1
+
+                i += 1
+
+        if didFlipBit:
+            return winCondition.checkWin(self)
+        else:
+            return 0
+
 class WinCondition():
     def __init__(self, name, col1, col2, col3, col4, col5):
         self.name = name
@@ -197,10 +265,24 @@ class WinCondition():
 
         return result
     
-if __name__ == '__main__':
-    db = Database()
-    card = Card("red", 888, 8800, [1,2,3,4,5], [16,17,18,19,20], [31,32,33,34,35], [46,47,48,49,50], [61,62,63,64,65])
-    win = WinCondition("inside_square", [0,0,0,0,0], [0,1,1,1,0], [0,1,1,1,0], [0,1,1,1,0], [0,0,0,0,0])
-    db.readCard(card)
-    db.readWin(win)
-    
+    def checkWin(self, card):
+        bColBits = []
+        for value in card.bCol:
+            bColBits.append(value[1])
+        iColBits = []
+        for value in card.iCol:
+            iColBits.append(value[1])
+        nColBits = []
+        for value in card.nCol:
+            nColBits.append(value[1])
+        gColBits = []
+        for value in card.gCol:
+            gColBits.append(value[1])
+        oColBits = []
+        for value in card.oCol:
+            oColBits.append(value[1])
+
+        if bColBits == self.col[0] and iColBits == self.col[1] and nColBits == self.col[2] and gColBits == self.col[3] and oColBits == self.col[4]:
+            return 1
+        else:
+            return 0
