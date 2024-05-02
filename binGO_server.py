@@ -44,11 +44,17 @@ PAGE_HEADER = """<!DOCTYPE html>
 PAGE_AJAX = """ <script>
                     $(document).ready(function(){
                         
-                        updateContent()
+                        updateContent();
 
                         $("#enter-num").click(function(){
-                            updateContent()
+                            updateContent();
                         });
+
+                        $('#num-input').keypress(function(event) {
+                            if (event.keyCode === 13){
+                                updateContent();
+                            }
+                        })
 
                         function updateContent() {
                             var number = $("#num-input").val();
@@ -58,6 +64,7 @@ PAGE_AJAX = """ <script>
                                 type: 'POST',
                                 data: {value: number},
                                 success: function(response) {
+                                    $("#num-input").val('');
                                     $("#parent-grid").html(response);
                                 }
                             });
@@ -106,7 +113,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards.append(card)
 
                     html += """ <body style="background-color: pink;">
-                                    <center><input id="num-input" type="text"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number"/><button id="enter-num">Submit</button></center><hr>
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -123,18 +130,38 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    "Yep"
+                    for index in cardIndexes:
+                        card = db.writeCard(index)
+                        self.server.cards.append(card)
+
+                    html += """ <body style="background-color: green;">
+                                    <center><input id="num-input" type="number"/><button id="enter-num">Submit</button></center><hr>
+                                    <div id="parent-grid" class="parent-grid">init</div>
+                            """
+                    html += PAGE_AJAX
+                    html += """ </body>
+                                </html>"""
             elif colour == 3:
                 cardIndexes = db.getCardsByColour("yellow")
 
                 if cardIndexes is None:
-                    html += """ <body style="background-color: yellow;">
+                    html += """ <body style="background-color: #FFD800;">
                                     <h1>You have no entered cards for Yellow. Enter some by clicking on the taskbar, or clicking here.</h1>
                                     <h1>You can also click <a href="binGO_start_page.html">here</a> to return to the main menu.</h1>
                                 </body>
                             </html>"""
                 else:
-                    "Yep"
+                    for index in cardIndexes:
+                        card = db.writeCard(index)
+                        self.server.cards.append(card)
+
+                    html += """ <body style="background-color: #FFD800;">
+                                    <center><input id="num-input" type="number"/><button id="enter-num">Submit</button></center><hr>
+                                    <div id="parent-grid" class="parent-grid">init</div>
+                            """
+                    html += PAGE_AJAX
+                    html += """ </body>
+                                </html>"""
 
             elif colour == 4:
                 cardIndexes = db.getCardsByColour("blue")
@@ -146,7 +173,17 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    "Yep"
+                    for index in cardIndexes:
+                        card = db.writeCard(index)
+                        self.server.cards.append(card)
+
+                    html += """ <body style="background-color: blue;">
+                                    <center><input id="num-input" type="number"/><button id="enter-num">Submit</button></center><hr>
+                                    <div id="parent-grid" class="parent-grid">init</div>
+                            """
+                    html += PAGE_AJAX
+                    html += """ </body>
+                                </html>"""
 
             else:
                 cardIndexes = db.getCardsByColour("orange")
@@ -158,7 +195,17 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    "Yep"
+                    for index in cardIndexes:
+                        card = db.writeCard(index)
+                        self.server.cards.append(card)
+
+                    html += """ <body style="background-color: orange;">
+                                    <center><input id="num-input" type="number"/><button id="enter-num">Submit</button></center><hr>
+                                    <div id="parent-grid" class="parent-grid">init</div>
+                            """
+                    html += PAGE_AJAX
+                    html += """ </body>
+                                </html>"""
 
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
@@ -211,9 +258,19 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(bytes(html, "utf-8"))
 
+        elif self.path in ['/binGO_card_page.html']:
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+
+                with open('binGO_card_page.html', 'rb') as f:
+                    self.wfile.write(f.read())
+
 if __name__ == "__main__":
     db = binGO_classes.Database()
     card = binGO_classes.Card("pink", 888, 8800, [1,2,3,4,5], [16,17,18,19,20], [31,32,33,34,35], [46,47,48,49,50], [61,62,63,64,65])
+    card2 = binGO_classes.Card("orange", 888, 8800, [1,2,3,4,5], [16,17,18,19,20], [31,32,33,34,35], [46,47,48,49,50], [61,62,63,64,65])
     db.readCard(card)
+    db.readCard(card2)
     httpd = binGoServer(('localhost', 8000), binGoHandler)
     httpd.serve_forever()
