@@ -89,6 +89,14 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open('binGO_pages/binGO_start_page.html', 'rb') as f:
                 self.wfile.write(f.read())
 
+        elif self.path in ['/binGO_card_page.html']:
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            with open('binGO_pages/binGO_card_page.html', 'rb') as f:
+                self.wfile.write(f.read())
+
     def do_POST(self):
         if self.path in ['/binGO_play.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
@@ -103,8 +111,8 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                 if cardIndexes is None:
                     html += """ <body style="background-color: pink;">
-                                    <h1>You have no entered cards for Pink. Enter some by clicking on the taskbar, or clicking here.</h1>
-                                    <h1>You can also click <a href="binGO_start_page.html">here</a> to return to the main menu.</h1>
+                                    <h1>You have no entered cards for Pink. Enter some by clicking on the taskbar, or clicking <a href="binGO_card_page.html">here.</a></h1>
+                                    <h1>You can also click <a href="binGO_card_page.html">here</a> to return to the main menu.</h1>
                                 </body>
                             </html>"""
                 else:
@@ -125,7 +133,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                 if cardIndexes is None:
                     html += """ <body style="background-color: green;">
-                                    <h1>You have no entered cards for Green. Enter some by clicking on the taskbar, or clicking here.</h1>
+                                    <h1>You have no entered cards for Green. Enter some by clicking on the taskbar, or clicking <a href="binGO_card_page.html">here.</a></h1>
                                     <h1>You can also click <a href="binGO_start_page.html">here</a> to return to the main menu.</h1>
                                 </body>
                             </html>"""
@@ -146,7 +154,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                 if cardIndexes is None:
                     html += """ <body style="background-color: #FFD800;">
-                                    <h1>You have no entered cards for Yellow. Enter some by clicking on the taskbar, or clicking here.</h1>
+                                    <h1>You have no entered cards for Yellow. Enter some by clicking on the taskbar, or clicking <a href="binGO_card_page.html">here.</a></h1>
                                     <h1>You can also click <a href="binGO_start_page.html">here</a> to return to the main menu.</h1>
                                 </body>
                             </html>"""
@@ -168,7 +176,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                 if cardIndexes is None:
                     html += """ <body style="background-color: blue;">
-                                    <h1>You have no entered cards for Blue. Enter some by clicking on the taskbar, or clicking here.</h1>
+                                    <h1>You have no entered cards for Blue. Enter some by clicking on the taskbar, or clicking <a href="binGO_card_page.html">here.</a></h1>
                                     <h1>You can also click <a href="binGO_start_page.html">here</a> to return to the main menu.</h1>
                                 </body>
                             </html>"""
@@ -190,7 +198,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                 if cardIndexes is None:
                     html += """ <body style="background-color: orange;">
-                                    <h1>You have no entered cards for Orange. Enter some by clicking on the taskbar, or clicking here.</h1>
+                                    <h1>You have no entered cards for Orange. Enter some by clicking on the taskbar, or clicking <a href="binGO_card_page.html">here.</a></h1>
                                     <h1>You can also click <a href="binGO_start_page.html">here</a> to return to the main menu.</h1>
                                 </body>
                             </html>"""
@@ -238,7 +246,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                             <div class="grid-item item-{card.oCol[1][1]}">{card.oCol[1][0]}</div>
                             <div class="grid-item item-{card.bCol[2][1]}">{card.bCol[2][0]}</div>
                             <div class="grid-item item-{card.iCol[2][1]}">{card.iCol[2][0]}</div>
-                            <div class="grid-item item-{card.nCol[2][1]}">{card.nCol[2][0]}</div>
+                            <div class="grid-item item-{card.nCol[2][1]}">FREE</div>
                             <div class="grid-item item-{card.gCol[2][1]}">{card.gCol[2][0]}</div>
                             <div class="grid-item item-{card.oCol[2][1]}">{card.oCol[2][0]}</div>
                             <div class="grid-item item-{card.bCol[3][1]}">{card.bCol[3][0]}</div>
@@ -259,18 +267,32 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.wfile.write(bytes(html, "utf-8"))
 
         elif self.path in ['/binGO_card_page.html']:
-                self.send_response(200)
-                self.send_header("Content-type", "text/html")
-                self.end_headers()
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
 
-                with open('binGO_card_page.html', 'rb') as f:
-                    self.wfile.write(f.read())
+            with open('binGO_pages/binGO_card_page.html', 'rb') as f:
+                self.wfile.write(f.read())
+
+        elif self.path in ['/binGO_submit_card.html']:
+            form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+            bCol = [int(form.getvalue('B1')), int(form.getvalue('B2')), int(form.getvalue('B3')), int(form.getvalue('B4')), int(form.getvalue('B5'))]
+            iCol = [int(form.getvalue('I1')), int(form.getvalue('I2')), int(form.getvalue('I3')), int(form.getvalue('I4')), int(form.getvalue('I5'))]
+            nCol = [int(form.getvalue('N1')), int(form.getvalue('N2')), 0, int(form.getvalue('N4')), int(form.getvalue('N5'))]
+            gCol = [int(form.getvalue('G1')), int(form.getvalue('G2')), int(form.getvalue('G3')), int(form.getvalue('G4')), int(form.getvalue('G5'))]
+            oCol = [int(form.getvalue('O1')), int(form.getvalue('O2')), int(form.getvalue('O3')), int(form.getvalue('O4')), int(form.getvalue('O5'))]
+
+            card = binGO_classes.Card(form.getvalue('colour'), int(form.getvalue('id1')), int(form.getvalue('id2')), bCol, iCol, nCol, gCol, oCol)
+            db.readCard(card)
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            with open("binGO_pages/binGO_start_page.html", "rb") as f:
+                self.wfile.write(f.read())
 
 if __name__ == "__main__":
     db = binGO_classes.Database()
-    card = binGO_classes.Card("pink", 888, 8800, [1,2,3,4,5], [16,17,18,19,20], [31,32,33,34,35], [46,47,48,49,50], [61,62,63,64,65])
-    card2 = binGO_classes.Card("orange", 888, 8800, [1,2,3,4,5], [16,17,18,19,20], [31,32,33,34,35], [46,47,48,49,50], [61,62,63,64,65])
-    db.readCard(card)
-    db.readCard(card2)
     httpd = binGoServer(('localhost', 8000), binGoHandler)
     httpd.serve_forever()

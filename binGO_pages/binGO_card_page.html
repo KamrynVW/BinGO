@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BinGO - Enter New Card</title>
+    <style>
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            grid-template-rows: repeat(6, 100px);
+            gap: 1px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .grid-item {
+            width: 100px;
+            height: 100px;
+            border: 1px black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .input-box {
+            font-size: 50px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body style="background-color: rgb(4, 22, 108);">
+    <form id="form" action="binGO_submit_card.html" method="post">
+        <center>
+            <div class="card-extras">
+                <select id="colour" name="colour">
+                    <option value="pink">Pink</option>
+                    <option value="green">Green</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="blue">Blue</option>
+                    <option value="orange">Orange</option> 
+                </select>
+                <input id="id1" name="id1" type="number"/>
+                <input id="id2" name="id2" type="number"/>
+            </div>
+            <div class="grid">
+                <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">B</div>
+                <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">I</div>
+                <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">N</div>
+                <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">G</div>
+                <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">O</div>
+                <input id="B1" name="B1" type="number" class=" input-box" min="1" max="15"/>
+                <input id="I1" name="I1" type="number" class=" input-box" min="16" max="30"/>
+                <input id="N1" name="N1" type="number" class=" input-box" min="31" max="45"/>
+                <input id="G1" name="G1" type="number" class=" input-box" min="46" max="60"/>
+                <input id="O1" name="O1" type="number" class=" input-box" min="61" max="75"/>
+                <input id="B2" name="B2" type="number" class=" input-box" min="1" max="15"/>
+                <input id="I2" name="I2" type="number" class=" input-box" min="16" max="30"/>
+                <input id="N2" name="N2" type="number" class=" input-box" min="31" max="45"/>
+                <input id="G2" name="G2" type="number" class=" input-box" min="46" max="60"/>
+                <input id="O2" name="O2" type="number" class=" input-box" min="61" max="75"/>
+                <input id="B3" name="B3" type="number" class=" input-box" min="1" max="15"/>
+                <input id="I3" name="I3" type="number" class=" input-box" min="16" max="30"/>
+                <div class="grid-item" style="background-color: white;">Free Space</div>
+                <input id="G3" name="G3" type="number" class=" input-box" min="46" max="60"/>
+                <input id="O3" name="O3" type="number" class=" input-box" min="61" max="75"/>
+                <input id="B4" name="B4" type="number" class=" input-box" min="1" max="15"/>
+                <input id="I4" name="I4" type="number" class=" input-box" min="16" max="30"/>
+                <input id="N4" name="N4" type="number" class=" input-box" min="31" max="45"/>
+                <input id="G4" name="G4" type="number" class=" input-box" min="46" max="60"/>
+                <input id="O4" name="O4" type="number" class=" input-box" min="61" max="75"/>
+                <input id="B5" name="B5" type="number" class=" input-box" min="1" max="15"/>
+                <input id="I5" name="I5" type="number" class=" input-box" min="16" max="30"/>
+                <input id="N5" name="N5" type="number" class=" input-box" min="31" max="45"/>
+                <input id="G5" name="G5" type="number" class=" input-box" min="46" max="60"/>
+                <input id="O5" name="O5" type="number" class=" input-box" min="61" max="75"/>
+            </div>
+            <button type="submit">Submit</button>
+        </center>
+    </form> 
+</body>
+</html>
