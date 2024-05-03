@@ -97,6 +97,14 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open('binGO_pages/binGO_card_page.html', 'rb') as f:
                 self.wfile.write(f.read())
 
+        elif self.path in ['/binGO_win_page.html']:
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            with open('binGO_pages/binGO_win_page.html', 'rb') as f:
+                self.wfile.write(f.read())
+
     def do_POST(self):
         if self.path in ['/binGO_play.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
@@ -274,6 +282,14 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open('binGO_pages/binGO_card_page.html', 'rb') as f:
                 self.wfile.write(f.read())
 
+        elif self.path in ['/binGO_win_page.html']:
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            with open('binGO_pages/binGO_win_page.html', 'rb') as f:
+                self.wfile.write(f.read())
+
         elif self.path in ['/binGO_submit_card.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
             bCol = [int(form.getvalue('B1')), int(form.getvalue('B2')), int(form.getvalue('B3')), int(form.getvalue('B4')), int(form.getvalue('B5'))]
@@ -292,6 +308,23 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open("binGO_pages/binGO_start_page.html", "rb") as f:
                 self.wfile.write(f.read())
 
+        elif self.path in ['/binGO_submit_win.html']:
+            form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+            bCol = [int(form.getvalue('B1')), int(form.getvalue('B2')), int(form.getvalue('B3')), int(form.getvalue('B4')), int(form.getvalue('B5'))]
+            iCol = [int(form.getvalue('I1')), int(form.getvalue('I2')), int(form.getvalue('I3')), int(form.getvalue('I4')), int(form.getvalue('I5'))]
+            nCol = [int(form.getvalue('N1')), int(form.getvalue('N2')), int(form.getvalue('N3')), int(form.getvalue('N4')), int(form.getvalue('N5'))]
+            gCol = [int(form.getvalue('G1')), int(form.getvalue('G2')), int(form.getvalue('G3')), int(form.getvalue('G4')), int(form.getvalue('G5'))]
+            oCol = [int(form.getvalue('O1')), int(form.getvalue('O2')), int(form.getvalue('O3')), int(form.getvalue('O4')), int(form.getvalue('O5'))]
+
+            winCondition = binGO_classes.WinCondition(form.getvalue('name'), bCol, iCol, nCol, gCol, oCol)
+            db.readWin(winCondition)
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            with open("binGO_pages/binGO_start_page.html", "rb") as f:
+                self.wfile.write(f.read())
 if __name__ == "__main__":
     db = binGO_classes.Database()
     httpd = binGoServer(('localhost', 8000), binGoHandler)

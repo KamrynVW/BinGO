@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            grid-template-rows: repeat(5, 100px);
+            gap: 5px;
+            border: 1px solid black;
+            padding: 5px;
+        }
+
+        .grid-item {
+            background-color: lightblue;
+            border: 1px solid black;
+        }
+
+    </style>
+    <title>BinGO - Enter New Win</title>
+</head>
+<body>
+    <form id="form" action="binGO_submit_win.html" method="post">
+        <input id="B1" name="B1" type="hidden" value="0"/>
+        <input id="I1" name="I1" type="hidden" value="0"/>
+        <input id="N1" name="N1" type="hidden" value="0"/>
+        <input id="G1" name="G1" type="hidden" value="0"/>
+        <input id="O1" name="O1" type="hidden" value="0"/>
+        <input id="B2" name="B2" type="hidden" value="0"/>
+        <input id="I2" name="I2" type="hidden" value="0"/>
+        <input id="N2" name="N2" type="hidden" value="0"/>
+        <input id="G2" name="G2" type="hidden" value="0"/>
+        <input id="O2" name="O2" type="hidden" value="0"/>
+        <input id="B3" name="B3" type="hidden" value="0"/>
+        <input id="I3" name="I3" type="hidden" value="0"/>
+        <input id="N3" name="N3" type="hidden" value="0"/>
+        <input id="G3" name="G3" type="hidden" value="0"/>
+        <input id="O3" name="O3" type="hidden" value="0"/>
+        <input id="B4" name="B4" type="hidden" value="0"/>
+        <input id="I4" name="I4" type="hidden" value="0"/>
+        <input id="N4" name="N4" type="hidden" value="0"/>
+        <input id="G4" name="G4" type="hidden" value="0"/>
+        <input id="O4" name="O4" type="hidden" value="0"/>
+        <input id="B5" name="B5" type="hidden" value="0"/>
+        <input id="I5" name="I5" type="hidden" value="0"/>
+        <input id="N5" name="N5" type="hidden" value="0"/>
+        <input id="G5" name="G5" type="hidden" value="0"/>
+        <input id="O5" name="O5" type="hidden" value="0"/>
+        <center>
+            <label for="name">Name of Win:</label>
+            <input id="name" name="name" type="text"/>
+            <hr>
+        </center>
+
+        <div class="container">
+            <div class="grid-container">
+                <div class="grid-item" onclick="flipTile(this, 'B1')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'I1')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'N1')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'G1')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'O1')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'B2')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'I2')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'N2')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'G2')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'O2')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'B3')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'I3')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'N3')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'G3')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'O3')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'B4')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'I4')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'N4')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'G4')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'O4')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'B5')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'I5')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'N5')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'G5')"></div>
+                <div class="grid-item" onclick="flipTile(this, 'O5')"></div>
+            </div>
+        </div>
+        
+        <center>
+            <button type="submit">Submit</button>
+        </center>
+    </form>
+    
+
+    <script>
+        function flipTile(element, key) {
+            var currentColour = element.style.backgroundColor;
+
+            if (currentColour === 'lightblue' || currentColour === '') {
+                element.style.backgroundColor = 'red';
+                document.getElementById(key).value = 1;
+                console.log(document.getElementById(key).value)
+            } else {
+                element.style.backgroundColor = 'lightblue';
+                document.getElementById(key).value = 0
+                console.log(document.getElementById(key).value)
+            }
+        }
+    </script>
+</body>
+</html>
