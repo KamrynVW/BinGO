@@ -58,6 +58,7 @@ PAGE_AJAX = """ <script>
 
                         function updateContent() {
                             var number = $("#num-input").val();
+                            console.log(number)
 
                             $.ajax({
                                 url: "/binGO_get_cards",
@@ -129,7 +130,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards.append(card)
 
                     html += """ <body style="background-color: pink;">
-                                    <center><input id="num-input" type="number"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button></center><hr>
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -151,7 +152,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards.append(card)
 
                     html += """ <body style="background-color: green;">
-                                    <center><input id="num-input" type="number"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button></center><hr>
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -172,7 +173,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards.append(card)
 
                     html += """ <body style="background-color: #FFD800;">
-                                    <center><input id="num-input" type="number"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button></center><hr>
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -194,7 +195,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards.append(card)
 
                     html += """ <body style="background-color: blue;">
-                                    <center><input id="num-input" type="number"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button></center><hr>
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -216,7 +217,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards.append(card)
 
                     html += """ <body style="background-color: orange;">
-                                    <center><input id="num-input" type="number"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button></center><hr>
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -239,8 +240,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             html = ""
             for card in self.server.cards:
-                if num != 0:
-                    win = card.flipTileBit(num, self.server.winCondition)
+                win = card.flipTileBit(num, self.server.winCondition)
                 html += """<div class="grid-container">"""
                 html += f"""<div class="grid-item item-{card.bCol[0][1]}">{card.bCol[0][0]}</div>
                             <div class="grid-item item-{card.iCol[0][1]}">{card.iCol[0][0]}</div>
@@ -318,6 +318,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             winCondition = binGO_classes.WinCondition(form.getvalue('name'), bCol, iCol, nCol, gCol, oCol)
             db.readWin(winCondition)
+            self.server.winCondition = winCondition
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")

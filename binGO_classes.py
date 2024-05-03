@@ -185,7 +185,7 @@ class Card():
         self.backId = id2
         self.bCol = [[col1[0], 0], [col1[1], 0], [col1[2], 0], [col1[3], 0], [col1[4], 0]]
         self.iCol = [[col2[0], 0], [col2[1], 0], [col2[2], 0], [col2[3], 0], [col2[4], 0]]
-        self.nCol = [[col3[0], 0], [col3[1], 0], [col3[2], 1], [col3[3], 0], [col3[4], 0]]
+        self.nCol = [[col3[0], 0], [col3[1], 0], [col3[2], 0], [col3[3], 0], [col3[4], 0]]
         self.gCol = [[col4[0], 0], [col4[1], 0], [col4[2], 0], [col4[3], 0], [col4[4], 0]]
         self.oCol = [[col5[0], 0], [col5[1], 0], [col5[2], 0], [col5[3], 0], [col5[4], 0]]
 
@@ -201,8 +201,13 @@ class Card():
     def flipTileBit(self, value, winCondition):
         i = 0
         didFlipBit = 0
+        
+        if value == 0 and winCondition.col[2][2] == 1:
+            print("hello")
+            self.nCol[2][1] = 1
+
         # B
-        if value >= 1 and value <= 15:
+        elif value >= 1 and value <= 15:
             for tileValue in self.bCol:
                 if tileValue[0] == value and winCondition.col[0][i] == 1:
                     tileValue[1] = 1
