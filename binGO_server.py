@@ -30,7 +30,6 @@ PAGE_HEADER = """<!DOCTYPE html>
                                     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Automatically adjust columns */
                                     grid-auto-rows: minmax(100px, auto); /* Automatically adjust rows */
                                     gap: 20px;
-                                    overflow: auto;
                                 }
 
                                 .item-1 {
@@ -41,42 +40,67 @@ PAGE_HEADER = """<!DOCTYPE html>
                         </head>
               """
 
-PAGE_AJAX = """ <script>
-                    $(document).ready(function(){
-                        
+PAGE_AJAX = f""" <script>
+                    $(document).ready(function(){{
+                              
                         updateContent();
 
-                        $("#enter-num").click(function(){
+                        $("#enter-num").click(function(){{
                             updateContent();
-                        });
+                        }});
 
-                        $('#num-input').keypress(function(event) {
-                            if (event.keyCode === 13){
+                        $('#num-input').keypress(function(event) {{
+                            if (event.keyCode === 13){{
                                 updateContent();
-                            }
-                        })
+                            }}
+                        }})
 
-                        function updateContent() {
+                        function updateContent() {{
                             var number = $("#num-input").val();
-                            console.log(number)
-
-                            $.ajax({
+                            
+                            $.ajax({{
                                 url: "/binGO_get_cards",
                                 type: 'POST',
-                                data: {value: number},
-                                success: function(response) {
+                                data: {{value: number}},
+                                success: function(response) {{
+                                    $.ajax({{
+                                        url: "/binGO_get_win_bit",
+                                        type: 'GET',
+                                        success: function(response) {{
+                                            if (response === '1') {{
+                                                $.ajax({{
+                                                    url: "/binGO_get_back_id",
+                                                    type: 'GET',
+                                                    success: function(response) {{
+                                                        var backID = parseInt(response);
+
+                                                        $.ajax({{
+                                                            url: "/binGO_get_middle_id",
+                                                            type: 'GET',
+                                                            success: function(response) {{
+                                                                var middleID = parseInt(response);
+
+                                                                document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<dialog open><h1>Winner!</h1><h2>Middle ID: " + middleID + ", Back ID: " + backID + "</dialog><br><br><br><br><br><br><br><br><br><br>");
+                                                            }}
+                                                        }});
+                                                    }}
+                                                }});
+                                            }}
+                                        }}
+                                    }});
                                     $("#num-input").val('');
                                     $("#parent-grid").html(response);
-                                }
-                            });
-                        }
-                    });
+                                }}
+                            }});
+                        }}
+                    }});
                 </script>"""
 
 class binGoServer(HTTPServer):
     def __init__(self, address, handler):
         self.cards = []
         self.winCondition = binGO_classes.WinCondition("winner", [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1])
+        self.winnerCard = None
         super().__init__(address, handler)
 
 class binGoHandler(BaseHTTPRequestHandler):
@@ -106,6 +130,36 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open('binGO_pages/binGO_win_page.html', 'rb') as f:
                 self.wfile.write(f.read())
 
+        elif self.path in ['/binGO_get_win_bit']:
+            if self.server.winnerCard is not None:
+                returnValue =  1
+            else:
+                returnValue =  0
+            
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            self.wfile.write(bytes(str(returnValue), "utf-8"))
+
+        elif self.path in ['/binGO_get_middle_id']:
+            returnValue = self.server.winnerCard.middleId
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            self.wfile.write(bytes(str(returnValue), "utf-8"))
+
+        elif self.path in ['/binGO_get_back_id']:
+            returnValue = self.server.winnerCard.backId
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            self.wfile.write(bytes(str(returnValue), "utf-8"))
+
     def do_POST(self):
         if self.path in ['/binGO_play.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
@@ -125,12 +179,13 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    for index in cardIndexes:
-                        card = db.writeCard(index)
-                        self.server.cards.append(card)
+                    if len(self.server.cards) == 0:
+                        for index in cardIndexes:
+                            card = db.writeCard(index)
+                            self.server.cards.append(card)
 
                     html += """ <body style="background-color: pink;">
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -147,12 +202,13 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    for index in cardIndexes:
-                        card = db.writeCard(index)
-                        self.server.cards.append(card)
+                    if len(self.server.cards) == 0:
+                        for index in cardIndexes:
+                            card = db.writeCard(index)
+                            self.server.cards.append(card)
 
                     html += """ <body style="background-color: green;">
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -168,12 +224,13 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    for index in cardIndexes:
-                        card = db.writeCard(index)
-                        self.server.cards.append(card)
+                    if len(self.server.cards) == 0:
+                        for index in cardIndexes:
+                            card = db.writeCard(index)
+                            self.server.cards.append(card)
 
                     html += """ <body style="background-color: #FFD800;">
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -190,12 +247,13 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    for index in cardIndexes:
-                        card = db.writeCard(index)
-                        self.server.cards.append(card)
+                    if len(self.server.cards) == 0:
+                        for index in cardIndexes:
+                            card = db.writeCard(index)
+                            self.server.cards.append(card)
 
                     html += """ <body style="background-color: blue;">
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -212,12 +270,13 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    for index in cardIndexes:
-                        card = db.writeCard(index)
-                        self.server.cards.append(card)
+                    if len(self.server.cards) == 0:
+                        for index in cardIndexes:
+                            card = db.writeCard(index)
+                            self.server.cards.append(card)
 
                     html += """ <body style="background-color: orange;">
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button></center><hr>
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
                     html += PAGE_AJAX
@@ -238,11 +297,15 @@ class binGoHandler(BaseHTTPRequestHandler):
             else:
                 num = int(form.getvalue("value"))
 
-            html = ""
+            cardHtml = ""
             for card in self.server.cards:
                 win = card.flipTileBit(num, self.server.winCondition)
-                html += """<div class="grid-container">"""
-                html += f"""<div class="grid-item item-{card.bCol[0][1]}">{card.bCol[0][0]}</div>
+
+                if win == 1:
+                    self.server.winnerCard = card
+
+                cardHtml += """<div class="grid-container">"""
+                cardHtml += f"""<div class="grid-item item-{card.bCol[0][1]}">{card.bCol[0][0]}</div>
                             <div class="grid-item item-{card.iCol[0][1]}">{card.iCol[0][0]}</div>
                             <div class="grid-item item-{card.nCol[0][1]}">{card.nCol[0][0]}</div>
                             <div class="grid-item item-{card.gCol[0][1]}">{card.gCol[0][0]}</div>
@@ -267,12 +330,12 @@ class binGoHandler(BaseHTTPRequestHandler):
                             <div class="grid-item item-{card.nCol[4][1]}">{card.nCol[4][0]}</div>
                             <div class="grid-item item-{card.gCol[4][1]}">{card.gCol[4][0]}</div>
                             <div class="grid-item item-{card.oCol[4][1]}">{card.oCol[4][0]}</div>"""
-                html += "</div>"
+                cardHtml += "</div>"
 
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
-            self.wfile.write(bytes(html, "utf-8"))
+            self.wfile.write(bytes(cardHtml, "utf-8"))
 
         elif self.path in ['/binGO_card_page.html']:
             self.send_response(200)
@@ -326,6 +389,18 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             with open("binGO_pages/binGO_start_page.html", "rb") as f:
                 self.wfile.write(f.read())
+
+        elif self.path in ['/binGO_end_game.html']:
+            self.server.cards = []
+            self.server.winnerCard = None
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            with open("binGO_pages/binGO_start_page.html", "rb") as f:
+                self.wfile.write(f.read())
+
 if __name__ == "__main__":
     db = binGO_classes.Database()
     httpd = binGoServer(('localhost', 8000), binGoHandler)

@@ -203,7 +203,6 @@ class Card():
         didFlipBit = 0
         
         if value == 0 and winCondition.col[2][2] == 1:
-            print("hello")
             self.nCol[2][1] = 1
 
         # B
