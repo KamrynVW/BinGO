@@ -120,8 +120,15 @@ class Database():
         g_col_string = ','.join(str(value) for value in win.col[3])
         o_col_string = ','.join(str(value) for value in win.col[4])
 
+        if win.name is None:
+            noName = True
+
         cur.execute("INSERT INTO WinConditions (NAME, COLUMNB, COLUMNI, COLUMNN, COLUMNG, COLUMNO) VALUES (?,?,?,?,?,?)", 
                     (win.name, b_col_string, i_col_string, n_col_string, g_col_string, o_col_string))
+        ID = cur.lastrowid
+        
+        if noName:
+            cur.execute("UPDATE WinConditions SET NAME = ? WHERE WINID = ?", (f"Win-{ID}", ID))
         
         cur.close()
         self.conn.commit()

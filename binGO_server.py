@@ -35,6 +35,45 @@ PAGE_HEADER = """<!DOCTYPE html>
                                 .item-1 {
                                     background-color: yellow;    
                                 }
+
+                                .dropbtn {
+                                    background-color: #4CAF50;
+                                    color: white;
+                                    padding: 16px;
+                                    font-size: 16px;
+                                    border: none;
+                                    cursor: pointer;
+                                }
+
+                                .dropdown {
+                                    position: relative;
+                                    display: inline-block;
+                                }
+
+                                .dropdown-content {
+                                    display: none;
+                                    position: absolute;
+                                    background-color: #f9f9f9;
+                                    min-width: 160px;
+                                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                                    z-index: 1;
+                                }
+
+                                .dropdown-content div {
+                                    color: black;
+                                    text-decoration: none;
+                                    display: block;
+                                }
+
+                                .dropdown-content div:hover {background-color: #f1f1f1}
+
+                                .dropdown:hover .dropdown-content {
+                                    display: block;
+                                }
+
+                                .dropdown:hover .dropbtn {
+                                    background-color: #3e8e41;
+                                }
                             </style>
                             <title>BinGO!</title>
                         </head>
@@ -79,8 +118,13 @@ PAGE_AJAX = f""" <script>
                                                             type: 'GET',
                                                             success: function(response) {{
                                                                 var middleID = parseInt(response);
+                                                                var dialog = document.getElementById('dialog');
 
-                                                                document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<dialog open><h1>Winner!</h1><h2>Middle ID: " + middleID + ", Back ID: " + backID + "</dialog><br><br><br><br><br><br><br><br><br><br>");
+                                                                if (dialog) {{
+                                                                    dialog.innerHTML = '<h1>Winner!</h1><h2>Middle ID: ' + middleID + ', Back ID: ' + backID + '</h2>';
+                                                                }} else {{
+                                                                    document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<dialog id='dialog' open><h1>Winner!</h1><h2>Middle ID: " + middleID + ", Back ID: " + backID + "</dialog><br><br><br><br><br><br><br><br><br><br>");
+                                                                }}
                                                             }}
                                                         }});
                                                     }}
@@ -179,12 +223,33 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    if len(self.server.cards) == 0:
-                        for index in cardIndexes:
-                            card = db.writeCard(index)
-                            self.server.cards.append(card)
+                    cardArray = []
+                    for index in cardIndexes:
+                        card = db.writeCard(index)
+                        cardArray.append(card)
+                        self.server.cards = cardArray
 
                     html += """ <body style="background-color: pink;">
+                                    <center>
+                                        <form action="/binGO_win_page.html" method="post" style="display: inline;">
+                                            <div class="dropdown">
+                                                <button class="dropbtn" type="submit">Create New Win</button>
+                                            </div>
+                                        </form>
+                                        <div class="dropdown">
+                                            <button class="dropbtn">Apply New Win</button>
+                                            <div class="dropdown-content">
+                                            <div><h1>Link 1</h1></div>
+                                            <div><h1>Link 2</h1></div>
+                                            <div><h1>Link 3</h1></div>
+                                            </div>
+                                        </div>
+                                        <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                                            <div class="dropdown">
+                                                <button class="dropbtn" type="submit">Create New Card</button>
+                                            </div>
+                                        </form>
+                                    <center><br>
                                     <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
@@ -202,12 +267,19 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    if len(self.server.cards) == 0:
-                        for index in cardIndexes:
-                            card = db.writeCard(index)
-                            self.server.cards.append(card)
+                    cardArray = []
+                    for index in cardIndexes:
+                        card = db.writeCard(index)
+                        cardArray.append(card)
+                        self.server.cards = cardArray
 
                     html += """ <body style="background-color: green;">
+                                    <nav>
+                                        <ul>
+                                            <li><a>Home</a></li>
+                                            <li><a>Boots</a></li>
+                                        </ul>
+                                    </nav>
                                     <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
@@ -224,12 +296,19 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    if len(self.server.cards) == 0:
-                        for index in cardIndexes:
-                            card = db.writeCard(index)
-                            self.server.cards.append(card)
+                    cardArray = []
+                    for index in cardIndexes:
+                        card = db.writeCard(index)
+                        cardArray.append(card)
+                        self.server.cards = cardArray
 
                     html += """ <body style="background-color: #FFD800;">
+                                    <nav>
+                                        <ul>
+                                            <li><a>Home</a></li>
+                                            <li><a>Boots</a></li>
+                                        </ul>
+                                    </nav>
                                     <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
@@ -247,12 +326,19 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    if len(self.server.cards) == 0:
-                        for index in cardIndexes:
-                            card = db.writeCard(index)
-                            self.server.cards.append(card)
+                    cardArray = []
+                    for index in cardIndexes:
+                        card = db.writeCard(index)
+                        cardArray.append(card)
+                        self.server.cards = cardArray
 
                     html += """ <body style="background-color: blue;">
+                                    <nav>
+                                        <ul>
+                                            <li><a>Home</a></li>
+                                            <li><a>Boots</a></li>
+                                        </ul>
+                                    </nav>
                                     <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
@@ -270,12 +356,19 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 </body>
                             </html>"""
                 else:
-                    if len(self.server.cards) == 0:
-                        for index in cardIndexes:
-                            card = db.writeCard(index)
-                            self.server.cards.append(card)
-
+                    cardArray = []
+                    for index in cardIndexes:
+                        card = db.writeCard(index)
+                        cardArray.append(card)
+                        self.server.cards = cardArray
+                        
                     html += """ <body style="background-color: orange;">
+                                    <nav>
+                                        <ul>
+                                            <li><a>Home</a></li>
+                                            <li><a>Boots</a></li>
+                                        </ul>
+                                    </nav>
                                     <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>
                             """
