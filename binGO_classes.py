@@ -120,6 +120,8 @@ class Database():
         g_col_string = ','.join(str(value) for value in win.col[3])
         o_col_string = ','.join(str(value) for value in win.col[4])
 
+        noName = False
+
         if win.name is None:
             noName = True
 
@@ -184,6 +186,17 @@ class Database():
             return data[0]
         else:
             return None
+        
+    def getAllWinNames(self):
+        cur = self.conn.cursor()
+
+        cur.execute("SELECT NAME FROM WinConditions")
+        data = cur.fetchall()
+
+        names = [name[0] for name in data]
+
+        cur.close()
+        return names
     
 class Card():
     def __init__(self, colour, id1, id2, col1, col2, col3, col4, col5):
@@ -261,6 +274,26 @@ class Card():
             return winCondition.checkWin(self)
         else:
             return 0
+        
+    def reapplyWin(self, winCondition, numbers):
+        for tile in self.bCol:
+            tile[1] = 0
+
+        for tile in self.iCol:
+            tile[1] = 0
+
+        for tile in self.nCol:
+            tile[1] = 0
+
+        for tile in self.gCol:
+            tile[1] = 0
+
+        for tile in self.oCol:
+            tile[1] = 0
+
+        for number in numbers:
+            self.flipTileBit(number, winCondition)
+
 
 class WinCondition():
     def __init__(self, name, col1, col2, col3, col4, col5):

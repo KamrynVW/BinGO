@@ -92,52 +92,70 @@ PAGE_AJAX = f""" <script>
                             if (event.keyCode === 13){{
                                 updateContent();
                             }}
-                        }})
+                        }});
+                    }});
 
-                        function updateContent() {{
-                            var number = $("#num-input").val();
-                            
+                function changeWin(name) {{
+                    $.ajax({{
+                        url: "/binGO_change_win",
+                        type: 'POST',
+                        data: {{value: name}},
+                        success: function(response) {{
+                            var dialogBox = document.getElementById('dialogBox');
+                            if (dialogBox) {{
+                                dialogBox.remove();
+                            }} else {{
+                                console.log("did not find dialogBox");
+                            }}
+                            updateContent();
+                        }}
+                    }});
+                }}
+
+                function updateContent() {{
+                    var number = $("#num-input").val();
+                    
+                    $.ajax({{
+                        url: "/binGO_get_cards",
+                        type: 'POST',
+                        data: {{value: number}},
+                        success: function(response) {{
                             $.ajax({{
-                                url: "/binGO_get_cards",
-                                type: 'POST',
-                                data: {{value: number}},
+                                url: "/binGO_get_win_bit",
+                                type: 'GET',
                                 success: function(response) {{
-                                    $.ajax({{
-                                        url: "/binGO_get_win_bit",
-                                        type: 'GET',
-                                        success: function(response) {{
-                                            if (response === '1') {{
+                                    if (response === '1') {{
+                                        $.ajax({{
+                                            url: "/binGO_get_back_id",
+                                            type: 'GET',
+                                            success: function(response) {{
+                                                var backID = parseInt(response);
+
                                                 $.ajax({{
-                                                    url: "/binGO_get_back_id",
+                                                    url: "/binGO_get_middle_id",
                                                     type: 'GET',
                                                     success: function(response) {{
-                                                        var backID = parseInt(response);
+                                                        var middleID = parseInt(response);
+                                                        var dialog = document.getElementById('dialog');
 
-                                                        $.ajax({{
-                                                            url: "/binGO_get_middle_id",
-                                                            type: 'GET',
-                                                            success: function(response) {{
-                                                                var middleID = parseInt(response);
-                                                                var dialog = document.getElementById('dialog');
-
-                                                                if (dialog) {{
-                                                                    dialog.innerHTML = '<h1>Winner!</h1><h2>Middle ID: ' + middleID + ', Back ID: ' + backID + '</h2>';
-                                                                }} else {{
-                                                                    document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<dialog id='dialog' open><h1>Winner!</h1><h2>Middle ID: " + middleID + ", Back ID: " + backID + "</dialog><br><br><br><br><br><br><br><br><br><br>");
-                                                                }}
-                                                            }}
-                                                        }});
+                                                        if (dialog) {{
+                                                            dialog.innerHTML = '<h1>Winner!</h1><h2>Middle ID: ' + middleID + ', Back ID: ' + backID + '</h2>';
+                                                        }} else {{
+                                                            document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<div id='dialogBox'><dialog id='dialog' open><h1>Winner!</h1><h2>Middle ID: " + middleID + ", Back ID: " + backID + "</dialog><br><br><br><br><br><br><br><br><br><br><div>");
+                                                        }}
                                                     }}
                                                 }});
                                             }}
-                                        }}
-                                    }});
-                                    $("#num-input").val('');
-                                    $("#parent-grid").html(response);
+                                        }});
+                                    }}
                                 }}
                             }});
+                            $("#num-input").val('');
+                            $("#parent-grid").html(response);
                         }}
                     }});
+                }}
+
                 </script>"""
 
 class binGoServer(HTTPServer):
@@ -145,6 +163,7 @@ class binGoServer(HTTPServer):
         self.cards = []
         self.winCondition = binGO_classes.WinCondition("winner", [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1])
         self.winnerCard = None
+        self.numbersCalled = []
         super().__init__(address, handler)
 
 class binGoHandler(BaseHTTPRequestHandler):
@@ -229,30 +248,30 @@ class binGoHandler(BaseHTTPRequestHandler):
                         cardArray.append(card)
                         self.server.cards = cardArray
 
+                    winNames = db.getAllWinNames()
+                    winNamesHTML = ''.join(f"""<div onclick="changeWin('{name}')"><h1>{name}</h1></div>""" for name in winNames)
+
                     html += """ <body style="background-color: pink;">
                                     <center>
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Win</button>
                                             </div>
-                                        </form>
-                                        <div class="dropdown">
+                                        </form>"""
+                    html +=        f""" <div class="dropdown">
                                             <button class="dropbtn">Apply New Win</button>
-                                            <div class="dropdown-content">
-                                            <div><h1>Link 1</h1></div>
-                                            <div><h1>Link 2</h1></div>
-                                            <div><h1>Link 3</h1></div>
-                                            </div>
-                                        </div>
-                                        <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                                                <div class="dropdown-content">
+                                                {winNamesHTML}
+                                                </div>
+                                        </div>"""
+                    html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
                                         </form>
                                     <center><br>
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
-                                    <div id="parent-grid" class="parent-grid">init</div>
-                            """
+                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button id="end-button" type="submit">End Game</button></form></center><hr id="hr-tag">
+                                    <div id="parent-grid" class="parent-grid">init</div>"""
                     html += PAGE_AJAX
                     html += """ </body>
                                 </html>"""
@@ -273,16 +292,30 @@ class binGoHandler(BaseHTTPRequestHandler):
                         cardArray.append(card)
                         self.server.cards = cardArray
 
-                    html += """ <body style="background-color: green;">
-                                    <nav>
-                                        <ul>
-                                            <li><a>Home</a></li>
-                                            <li><a>Boots</a></li>
-                                        </ul>
-                                    </nav>
+                    winNames = db.getAllWinNames()
+                    winNamesHTML = ''.join(f"""<div onclick="changeWin('{name}')"><h1>{name}</h1></div>""" for name in winNames)
+
+                    html += """ <body style="background-color: pink;">
+                                    <center>
+                                        <form action="/binGO_win_page.html" method="post" style="display: inline;">
+                                            <div class="dropdown">
+                                                <button class="dropbtn" type="submit">Create New Win</button>
+                                            </div>
+                                        </form>"""
+                    html +=        f""" <div class="dropdown">
+                                            <button class="dropbtn">Apply New Win</button>
+                                                <div class="dropdown-content">
+                                                {winNamesHTML}
+                                                </div>
+                                        </div>"""
+                    html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                                            <div class="dropdown">
+                                                <button class="dropbtn" type="submit">Create New Card</button>
+                                            </div>
+                                        </form>
+                                    <center><br>
                                     <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
-                                    <div id="parent-grid" class="parent-grid">init</div>
-                            """
+                                    <div id="parent-grid" class="parent-grid">init</div>"""
                     html += PAGE_AJAX
                     html += """ </body>
                                 </html>"""
@@ -302,16 +335,31 @@ class binGoHandler(BaseHTTPRequestHandler):
                         cardArray.append(card)
                         self.server.cards = cardArray
 
-                    html += """ <body style="background-color: #FFD800;">
-                                    <nav>
-                                        <ul>
-                                            <li><a>Home</a></li>
-                                            <li><a>Boots</a></li>
-                                        </ul>
-                                    </nav>
+                    winNames = db.getAllWinNames()
+                    winNamesHTML = ''.join(f"""<div onclick="changeWin('{name}')"><h1>{name}</h1></div>""" for name in winNames)
+
+                    html += """ <body style="background-color: pink;">
+                                    <center>
+                                        <form action="/binGO_win_page.html" method="post" style="display: inline;">
+                                            <div class="dropdown">
+                                                <button class="dropbtn" type="submit">Create New Win</button>
+                                            </div>
+                                        </form>"""
+                    html +=        f""" <div class="dropdown">
+                                            <button class="dropbtn">Apply New Win</button>
+                                                <div class="dropdown-content">
+                                                {winNamesHTML}
+                                                </div>
+                                        </div>"""
+                    html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                                            <div class="dropdown">
+                                                <button class="dropbtn" type="submit">Create New Card</button>
+                                            </div>
+                                        </form>
+                                    <center><br>
                                     <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
-                                    <div id="parent-grid" class="parent-grid">init</div>
-                            """
+                                    <div id="parent-grid" class="parent-grid">init</div>"""
+                    
                     html += PAGE_AJAX
                     html += """ </body>
                                 </html>"""
@@ -332,16 +380,30 @@ class binGoHandler(BaseHTTPRequestHandler):
                         cardArray.append(card)
                         self.server.cards = cardArray
 
-                    html += """ <body style="background-color: blue;">
-                                    <nav>
-                                        <ul>
-                                            <li><a>Home</a></li>
-                                            <li><a>Boots</a></li>
-                                        </ul>
-                                    </nav>
+                    winNames = db.getAllWinNames()
+                    winNamesHTML = ''.join(f"""<div onclick="changeWin('{name}')"><h1>{name}</h1></div>""" for name in winNames)
+
+                    html += """ <body style="background-color: pink;">
+                                    <center>
+                                        <form action="/binGO_win_page.html" method="post" style="display: inline;">
+                                            <div class="dropdown">
+                                                <button class="dropbtn" type="submit">Create New Win</button>
+                                            </div>
+                                        </form>"""
+                    html +=        f""" <div class="dropdown">
+                                            <button class="dropbtn">Apply New Win</button>
+                                                <div class="dropdown-content">
+                                                {winNamesHTML}
+                                                </div>
+                                        </div>"""
+                    html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                                            <div class="dropdown">
+                                                <button class="dropbtn" type="submit">Create New Card</button>
+                                            </div>
+                                        </form>
+                                    <center><br>
                                     <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
-                                    <div id="parent-grid" class="parent-grid">init</div>
-                            """
+                                    <div id="parent-grid" class="parent-grid">init</div>"""
                     html += PAGE_AJAX
                     html += """ </body>
                                 </html>"""
@@ -362,16 +424,30 @@ class binGoHandler(BaseHTTPRequestHandler):
                         cardArray.append(card)
                         self.server.cards = cardArray
                         
-                    html += """ <body style="background-color: orange;">
-                                    <nav>
-                                        <ul>
-                                            <li><a>Home</a></li>
-                                            <li><a>Boots</a></li>
-                                        </ul>
-                                    </nav>
+                    winNames = db.getAllWinNames()
+                    winNamesHTML = ''.join(f"""<div onclick="changeWin('{name}')"><h1>{name}</h1></div>""" for name in winNames)
+
+                    html += """ <body style="background-color: pink;">
+                                    <center>
+                                        <form action="/binGO_win_page.html" method="post" style="display: inline;">
+                                            <div class="dropdown">
+                                                <button class="dropbtn" type="submit">Create New Win</button>
+                                            </div>
+                                        </form>"""
+                    html +=        f""" <div class="dropdown">
+                                            <button class="dropbtn">Apply New Win</button>
+                                                <div class="dropdown-content">
+                                                {winNamesHTML}
+                                                </div>
+                                        </div>"""
+                    html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                                            <div class="dropdown">
+                                                <button class="dropbtn" type="submit">Create New Card</button>
+                                            </div>
+                                        </form>
+                                    <center><br>
                                     <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
-                                    <div id="parent-grid" class="parent-grid">init</div>
-                            """
+                                    <div id="parent-grid" class="parent-grid">init</div>"""
                     html += PAGE_AJAX
                     html += """ </body>
                                 </html>"""
@@ -389,6 +465,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                 num = 0
             else:
                 num = int(form.getvalue("value"))
+
+            self.server.numbersCalled.append(num)
 
             cardHtml = ""
             for card in self.server.cards:
@@ -486,6 +564,7 @@ class binGoHandler(BaseHTTPRequestHandler):
         elif self.path in ['/binGO_end_game.html']:
             self.server.cards = []
             self.server.winnerCard = None
+            self.server.numbersCalled = []
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -493,6 +572,23 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             with open("binGO_pages/binGO_start_page.html", "rb") as f:
                 self.wfile.write(f.read())
+
+        elif self.path in ['/binGO_change_win']:
+            form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+
+            name = form.getvalue("value")
+
+            self.server.winCondition = db.writeWin(db.getWinIdByName(name))
+            self.server.winnerCard = None
+            nameOfWin = self.server.winCondition.name
+
+            for card in self.server.cards:
+                card.reapplyWin(self.server.winCondition, self.server.numbersCalled)
+
+            self.send_response(200)
+            self.end_headers()
+
+            self.wfile.write(bytes(nameOfWin, "utf-8"))
 
 if __name__ == "__main__":
     db = binGO_classes.Database()
