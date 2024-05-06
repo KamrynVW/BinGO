@@ -214,6 +214,23 @@ class Database():
         
         self.conn.commit()
         cur.close()
+
+    def deleteWin(self, id):
+        cur = self.conn.cursor()
+
+        cur.execute("DELETE FROM WinConditions WHERE WINID = ?", (id,))
+
+        self.conn.commit()
+        cur.close()
+
+    def changeWin(self, id, name, bCol, iCol, nCol, gCol, oCol):
+        cur = self.conn.cursor()
+
+        cur.execute("UPDATE WinConditions SET NAME = ?, COLUMNB = ?, COLUMNI = ?, COLUMNN = ?, COLUMNG = ?, COLUMNO = ? WHERE WINID = ?",
+                    (name, bCol, iCol, nCol, gCol, oCol, id))
+        
+        self.conn.commit()
+        cur.close()
     
 class Card():
     def __init__(self, colour, id1, id2, col1, col2, col3, col4, col5):

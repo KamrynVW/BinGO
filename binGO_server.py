@@ -41,6 +41,7 @@ PAGE_HEADER = """<!DOCTYPE html>
                                     color: white;
                                     padding: 16px;
                                     font-size: 16px;
+                                    min-width: 160px;
                                     border: none;
                                     cursor: pointer;
                                 }
@@ -112,6 +113,16 @@ PAGE_AJAX = f""" <script>
                             updateContent();
                         }}
                     }});
+                }}
+
+                function editOrDeleteWin(name) {{
+                    var inputName = document.createElement("input");
+                    inputName.setAttribute("type", "hidden");
+                    inputName.setAttribute("name", "win-name");
+                    inputName.setAttribute("id", "win-name");
+                    inputName.setAttribute("value", name);
+                    document.getElementById("win-edit-delete-form").appendChild(inputName);
+                    document.getElementById("win-edit-delete-form").submit();
                 }}
 
                 function updateContent() {{
@@ -251,7 +262,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards = cardArray
 
                     winNames = db.getAllWinNames()
-                    winNamesHTML = ''.join(f"""<div onclick="changeWin('{name}')"><h1>{name}</h1></div>""" for name in winNames)
+                    winNamesHTML = ''.join(f"""<div><h3 onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
+                    winNamesCDHTML = ''.join(f"""<div><h3 onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
                     html += """ <body style="background-color: pink;">
                                     <center>
@@ -262,10 +274,18 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         </form>"""
                     html +=        f""" <div class="dropdown">
                                             <button class="dropbtn">Apply New Win</button>
-                                                <div class="dropdown-content">
-                                                {winNamesHTML}
-                                                </div>
+                                            <div class="dropdown-content">
+                                            {winNamesHTML}
+                                            </div>
                                         </div>"""
+                    html +=         f"""<form id="win-edit-delete-form" action="/binGO_edit_delete_win.html" method="post" style="display: inline">
+                                            <div class="dropdown">
+                                                <button class="dropbtn">Edit/Delete Win</button>
+                                                <div class="dropdown-content">
+                                                {winNamesCDHTML}
+                                                </div>
+                                            </div>
+                                        </form>"""
                     html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
@@ -478,7 +498,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                 if win == 1:
                     self.server.winnerCard = card
 
-                cardHtml += f"""<form id="change-delete-{i}" action="binGO_edit_delete.html" method="post">
+                cardHtml += f"""<form id="change-delete-{i}" action="binGO_edit_delete_card.html" method="post">
                                 <input type="hidden" id="card-num" name="card-num" value="{i}"/>
                                 <div onclick="editOrDelete('{i}')" class="grid-container">"""
                 cardHtml += f"""<div class="grid-item item-{card.bCol[0][1]}">{card.bCol[0][0]}</div>
@@ -596,7 +616,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(nameOfWin, "utf-8"))
 
-        elif self.path in ['/binGO_edit_delete.html']:
+        elif self.path in ['/binGO_edit_delete_card.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
 
             cardNum = int(form.getvalue("card-num"))
@@ -724,8 +744,184 @@ class binGoHandler(BaseHTTPRequestHandler):
 
         elif self.path in ['/binGO_delete_card']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
-            print("Deleting")
+            
             db.deleteCard(int(form.getvalue("d-card-num")))
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            with open('binGO_pages/binGO_start_page.html', 'rb') as f:
+                self.wfile.write(f.read())
+
+        elif self.path in ['/binGO_edit_delete_win.html']:
+            form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+
+            winName = form.getvalue("win-name")
+            winId = db.getWinIdByName(winName)
+            win = db.writeWin(winId)
+
+            html = f"""<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                <style>
+                    .container {{
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100%;
+                    }}
+
+                    .grid-container {{
+                        display: grid;
+                        grid-template-columns: repeat(5, 100px);
+                        grid-template-rows: repeat(5, 100px);
+                        gap: 5px;
+                        border: 1px solid black;
+                        padding: 5px;
+                    }}
+
+                    .grid-item-0 {{
+                        background-color: lightblue;
+                        border: 1px solid black;
+                    }}
+
+                    .grid-item-1 {{
+                        background-color: red;
+                        border: 1px solid black;
+                    }}
+
+                </style>
+                <title>BinGO - Enter New Win</title>
+            </head>
+            <body>
+                <form id="change-form" action="binGO_edit_win" method="post">
+                    <input id="win-id" name="win-id" type="hidden" value="{winId}"/>
+                    <input id="B1" name="B1" type="hidden" value="{win.col[0][0]}"/>
+                    <input id="I1" name="I1" type="hidden" value="{win.col[1][0]}"/>
+                    <input id="N1" name="N1" type="hidden" value="{win.col[2][0]}"/>
+                    <input id="G1" name="G1" type="hidden" value="{win.col[3][0]}"/>
+                    <input id="O1" name="O1" type="hidden" value="{win.col[4][0]}"/>
+                    <input id="B2" name="B2" type="hidden" value="{win.col[0][1]}"/>
+                    <input id="I2" name="I2" type="hidden" value="{win.col[1][1]}"/>
+                    <input id="N2" name="N2" type="hidden" value="{win.col[2][1]}"/>
+                    <input id="G2" name="G2" type="hidden" value="{win.col[3][1]}"/>
+                    <input id="O2" name="O2" type="hidden" value="{win.col[4][1]}"/>
+                    <input id="B3" name="B3" type="hidden" value="{win.col[0][2]}"/>
+                    <input id="I3" name="I3" type="hidden" value="{win.col[1][2]}"/>
+                    <input id="N3" name="N3" type="hidden" value="{win.col[2][2]}"/>
+                    <input id="G3" name="G3" type="hidden" value="{win.col[3][2]}"/>
+                    <input id="O3" name="O3" type="hidden" value="{win.col[4][2]}"/>
+                    <input id="B4" name="B4" type="hidden" value="{win.col[0][3]}"/>
+                    <input id="I4" name="I4" type="hidden" value="{win.col[1][3]}"/>
+                    <input id="N4" name="N4" type="hidden" value="{win.col[2][3]}"/>
+                    <input id="G4" name="G4" type="hidden" value="{win.col[3][3]}"/>
+                    <input id="O4" name="O4" type="hidden" value="{win.col[4][3]}"/>
+                    <input id="B5" name="B5" type="hidden" value="{win.col[0][4]}"/>
+                    <input id="I5" name="I5" type="hidden" value="{win.col[1][4]}"/>
+                    <input id="N5" name="N5" type="hidden" value="{win.col[2][4]}"/>
+                    <input id="G5" name="G5" type="hidden" value="{win.col[3][4]}"/>
+                    <input id="O5" name="O5" type="hidden" value="{win.col[4][4]}"/>
+                    <center>
+                        <label for="name">Name of Win:</label>
+                        <input value="{win.name}" id="name" name="name" type="text"/>
+                        <hr>
+                    </center>
+
+                    <div class="container">
+                        <div class="grid-container">
+                            <div class="grid-item-{win.col[0][0]}" onclick="flipTile(this, 'B1')"></div>
+                            <div class="grid-item-{win.col[1][0]}" onclick="flipTile(this, 'I1')"></div>
+                            <div class="grid-item-{win.col[2][0]}" onclick="flipTile(this, 'N1')"></div>
+                            <div class="grid-item-{win.col[3][0]}" onclick="flipTile(this, 'G1')"></div>
+                            <div class="grid-item-{win.col[4][0]}" onclick="flipTile(this, 'O1')"></div>
+                            <div class="grid-item-{win.col[0][1]}" onclick="flipTile(this, 'B2')"></div>
+                            <div class="grid-item-{win.col[1][1]}" onclick="flipTile(this, 'I2')"></div>
+                            <div class="grid-item-{win.col[2][1]}" onclick="flipTile(this, 'N2')"></div>
+                            <div class="grid-item-{win.col[3][1]}" onclick="flipTile(this, 'G2')"></div>
+                            <div class="grid-item-{win.col[4][1]}" onclick="flipTile(this, 'O2')"></div>
+                            <div class="grid-item-{win.col[0][2]}" onclick="flipTile(this, 'B3')"></div>
+                            <div class="grid-item-{win.col[1][2]}" onclick="flipTile(this, 'I3')"></div>
+                            <div class="grid-item-{win.col[2][2]}" onclick="flipTile(this, 'N3')"></div>
+                            <div class="grid-item-{win.col[3][2]}" onclick="flipTile(this, 'G3')"></div>
+                            <div class="grid-item-{win.col[4][2]}" onclick="flipTile(this, 'O3')"></div>
+                            <div class="grid-item-{win.col[0][3]}" onclick="flipTile(this, 'B4')"></div>
+                            <div class="grid-item-{win.col[1][3]}" onclick="flipTile(this, 'I4')"></div>
+                            <div class="grid-item-{win.col[2][3]}" onclick="flipTile(this, 'N4')"></div>
+                            <div class="grid-item-{win.col[3][3]}" onclick="flipTile(this, 'G4')"></div>
+                            <div class="grid-item-{win.col[4][3]}" onclick="flipTile(this, 'O4')"></div>
+                            <div class="grid-item-{win.col[0][4]}" onclick="flipTile(this, 'B5')"></div>
+                            <div class="grid-item-{win.col[1][4]}" onclick="flipTile(this, 'I5')"></div>
+                            <div class="grid-item-{win.col[2][4]}" onclick="flipTile(this, 'N5')"></div>
+                            <div class="grid-item-{win.col[3][4]}" onclick="flipTile(this, 'G5')"></div>
+                            <div class="grid-item-{win.col[4][4]}" onclick="flipTile(this, 'O5')"></div>
+                        </div>
+                    </div>
+                </form>
+                <form id="delete-form" action="binGO_delete_win" method="post">
+                    <input type="hidden" value="{winId}" name="win-id" id="win-id"/>
+                </form>
+
+                <button onclick="changeWin()">Change</button>
+                <button onclick="deleteWin()">Delete</button>
+
+                <script>
+                    function flipTile(element, key) {{
+                        var computedStyle = window.getComputedStyle(element);
+                        var currentColour = computedStyle.backgroundColor;
+                        
+                        if (currentColour === 'rgb(173, 216, 230)') {{
+                            element.style.backgroundColor = 'red';
+                            document.getElementById(key).value = 1;
+                        }} else {{
+                            element.style.backgroundColor = 'rgb(173, 216, 230)';
+                            document.getElementById(key).value = 0
+                        }}
+                    }}
+
+                    function changeWin() {{
+                        document.getElementById("change-form").submit();
+                    }}
+
+                    function deleteWin() {{
+                        document.getElementById("delete-form").submit();
+                    }}
+                </script>
+            </body>
+            </html>"""
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(bytes(html, "utf-8"))
+
+        elif self.path in ['/binGO_edit_win']:
+            form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+
+            bCol = f"{form.getvalue('B1')},{form.getvalue('B2')},{form.getvalue('B3')},{form.getvalue('B4')},{form.getvalue('B5')}"
+            iCol = f"{form.getvalue('I1')},{form.getvalue('I2')},{form.getvalue('I3')},{form.getvalue('I4')},{form.getvalue('I5')}"
+            nCol = f"{form.getvalue('N1')},{form.getvalue('N2')},{form.getvalue('N3')},{form.getvalue('N4')},{form.getvalue('N5')}"
+            gCol = f"{form.getvalue('G1')},{form.getvalue('G2')},{form.getvalue('G3')},{form.getvalue('G4')},{form.getvalue('G5')}"
+            oCol = f"{form.getvalue('O1')},{form.getvalue('O2')},{form.getvalue('O3')},{form.getvalue('O4')},{form.getvalue('O5')}"
+
+            db.changeWin(int(form.getvalue("win-id")), form.getvalue("name"), bCol, iCol, nCol, gCol, oCol)
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            with open('binGO_pages/binGO_start_page.html', 'rb') as f:
+                self.wfile.write(f.read())
+
+        elif self.path in ['/binGO_delete_win']:
+            form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+            
+            id = int(form.getvalue('win-id'))
+
+            db.deleteWin(id)
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
