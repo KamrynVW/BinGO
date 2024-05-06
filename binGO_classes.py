@@ -197,6 +197,23 @@ class Database():
 
         cur.close()
         return names
+
+    def deleteCard(self, id):
+        cur = self.conn.cursor()
+
+        cur.execute("DELETE FROM Cards WHERE CARDID = ?", (id,))
+
+        self.conn.commit()
+        cur.close()
+
+    def changeCard(self, id, middleID, backID, bCol, iCol, nCol, gCol, oCol):
+        cur = self.conn.cursor()
+
+        cur.execute("UPDATE Cards SET MIDDLEID = ?, BACKID = ?, COLUMNB = ?, COLUMNI = ?, COLUMNN = ?, COLUMNG = ?, COLUMNO = ? WHERE CARDID = ?",
+                    (middleID, backID, bCol, iCol, nCol, gCol, oCol, id))
+        
+        self.conn.commit()
+        cur.close()
     
 class Card():
     def __init__(self, colour, id1, id2, col1, col2, col3, col4, col5):

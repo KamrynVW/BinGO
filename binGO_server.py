@@ -95,6 +95,10 @@ PAGE_AJAX = f""" <script>
                         }});
                     }});
 
+                function editOrDelete(num) {{
+                    document.getElementById("change-delete-" + num).submit()
+                }}
+
                 function changeWin(name) {{
                     $.ajax({{
                         url: "/binGO_change_win",
@@ -104,8 +108,6 @@ PAGE_AJAX = f""" <script>
                             var dialogBox = document.getElementById('dialogBox');
                             if (dialogBox) {{
                                 dialogBox.remove();
-                            }} else {{
-                                console.log("did not find dialogBox");
                             }}
                             updateContent();
                         }}
@@ -469,13 +471,16 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.server.numbersCalled.append(num)
 
             cardHtml = ""
+            i = 1
             for card in self.server.cards:
                 win = card.flipTileBit(num, self.server.winCondition)
 
                 if win == 1:
                     self.server.winnerCard = card
 
-                cardHtml += """<div class="grid-container">"""
+                cardHtml += f"""<form id="change-delete-{i}" action="binGO_edit_delete.html" method="post">
+                                <input type="hidden" id="card-num" name="card-num" value="{i}"/>
+                                <div onclick="editOrDelete('{i}')" class="grid-container">"""
                 cardHtml += f"""<div class="grid-item item-{card.bCol[0][1]}">{card.bCol[0][0]}</div>
                             <div class="grid-item item-{card.iCol[0][1]}">{card.iCol[0][0]}</div>
                             <div class="grid-item item-{card.nCol[0][1]}">{card.nCol[0][0]}</div>
@@ -501,7 +506,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                             <div class="grid-item item-{card.nCol[4][1]}">{card.nCol[4][0]}</div>
                             <div class="grid-item item-{card.gCol[4][1]}">{card.gCol[4][0]}</div>
                             <div class="grid-item item-{card.oCol[4][1]}">{card.oCol[4][0]}</div>"""
-                cardHtml += "</div>"
+                cardHtml += "</div></form>"
+                i += 1
 
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
@@ -589,6 +595,144 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
             self.wfile.write(bytes(nameOfWin, "utf-8"))
+
+        elif self.path in ['/binGO_edit_delete.html']:
+            form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+
+            cardNum = int(form.getvalue("card-num"))
+            card = db.writeCard(cardNum)
+            
+            html = f""" <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>BinGO - Enter New Card</title>
+                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                            <style>
+                                .grid {{
+                                    display: grid;
+                                    grid-template-columns: repeat(5, 100px);
+                                    grid-template-rows: repeat(6, 100px);
+                                    gap: 1px;
+                                    justify-content: center;
+                                    align-items: center;
+                                }}
+
+                                .grid-item {{
+                                    width: 100px;
+                                    height: 100px;
+                                    border: 1px black;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                }}
+
+                                .input-box {{
+                                    font-size: 50px;
+                                    text-align: center;
+                                }}
+                            </style>
+                            <script>
+                                function changeCard() {{
+                                    document.getElementById("change-form").submit();
+                                }}
+
+                                function deleteCard() {{
+                                    document.getElementById("delete-form").submit();
+                                }}
+                            </script>
+                        </head>
+                        <body style="background-color: rgb(4, 22, 108);">
+                            <center>
+                                <form id="change-form" action="binGO_change_card" method="post">
+                                    <input type="hidden" id="card-num" name="card-num" value="{cardNum}"/>
+                                    <div class="card-extras">
+                                        <select id="colour" name="colour">
+                                            <option value="pink">Pink</option>
+                                            <option value="green">Green</option>
+                                            <option value="yellow">Yellow</option>
+                                            <option value="blue">Blue</option>
+                                            <option value="orange">Orange</option> 
+                                        </select>
+                                        <input value="{card.middleId}"id="id1" name="id1" type="number" required/>
+                                        <input value="{card.backId}" id="id2" name="id2" type="number" required/>
+                                    </div>
+                                    <div class="grid">
+                                        <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">B</div>
+                                        <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">I</div>
+                                        <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">N</div>
+                                        <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">G</div>
+                                        <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">O</div>
+                                        <input value="{card.bCol[0][0]}" id="B1" name="B1" type="number" class=" input-box" min="1" max="15"/>
+                                        <input value="{card.iCol[0][0]}" id="I1" name="I1" type="number" class=" input-box" min="16" max="30"/>
+                                        <input value="{card.nCol[0][0]}" id="N1" name="N1" type="number" class=" input-box" min="31" max="45"/>
+                                        <input value="{card.gCol[0][0]}" id="G1" name="G1" type="number" class=" input-box" min="46" max="60"/>
+                                        <input value="{card.oCol[0][0]}" id="O1" name="O1" type="number" class=" input-box" min="61" max="75"/>
+                                        <input value="{card.bCol[1][0]}" id="B2" name="B2" type="number" class=" input-box" min="1" max="15"/>
+                                        <input value="{card.iCol[1][0]}" id="I2" name="I2" type="number" class=" input-box" min="16" max="30"/>
+                                        <input value="{card.nCol[1][0]}" id="N2" name="N2" type="number" class=" input-box" min="31" max="45"/>
+                                        <input value="{card.gCol[1][0]}" id="G2" name="G2" type="number" class=" input-box" min="46" max="60"/>
+                                        <input value="{card.oCol[1][0]}" id="O2" name="O2" type="number" class=" input-box" min="61" max="75"/>
+                                        <input value="{card.bCol[2][0]}" id="B3" name="B3" type="number" class=" input-box" min="1" max="15"/>
+                                        <input value="{card.iCol[2][0]}" id="I3" name="I3" type="number" class=" input-box" min="16" max="30"/>
+                                        <div class="grid-item" style="background-color: white;">Free Space</div>
+                                        <input value="{card.gCol[2][0]}" id="G3" name="G3" type="number" class=" input-box" min="46" max="60"/>
+                                        <input value="{card.oCol[2][0]}" id="O3" name="O3" type="number" class=" input-box" min="61" max="75"/>
+                                        <input value="{card.bCol[3][0]}" id="B4" name="B4" type="number" class=" input-box" min="1" max="15"/>
+                                        <input value="{card.iCol[3][0]}" id="I4" name="I4" type="number" class=" input-box" min="16" max="30"/>
+                                        <input value="{card.nCol[3][0]}" id="N4" name="N4" type="number" class=" input-box" min="31" max="45"/>
+                                        <input value="{card.gCol[3][0]}" id="G4" name="G4" type="number" class=" input-box" min="46" max="60"/>
+                                        <input value="{card.oCol[3][0]}" id="O4" name="O4" type="number" class=" input-box" min="61" max="75"/>
+                                        <input value="{card.bCol[4][0]}" id="B5" name="B5" type="number" class=" input-box" min="1" max="15"/>
+                                        <input value="{card.iCol[4][0]}" id="I5" name="I5" type="number" class=" input-box" min="16" max="30"/>
+                                        <input value="{card.nCol[4][0]}" id="N5" name="N5" type="number" class=" input-box" min="31" max="45"/>
+                                        <input value="{card.gCol[4][0]}" id="G5" name="G5" type="number" class=" input-box" min="46" max="60"/>
+                                        <input value="{card.oCol[4][0]}" id="O5" name="O5" type="number" class=" input-box" min="61" max="75"/>
+                                    </div>
+                                </form>
+                                <form id="delete-form" action="binGO_delete_card" method="post">
+                                    <input type="hidden" id="d-card-num" name="d-card-num" value="{cardNum}"/>
+                                </form>
+                                <button onclick="changeCard()">Change</button>
+                                <button onclick="deleteCard()">Delete</button>
+                             </center>
+                        </body>
+                        </html>"""
+            
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(bytes(html, "utf-8"))
+
+        elif self.path in ['/binGO_change_card']:
+            form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+
+            bCol = f"{form.getvalue('B1')},{form.getvalue('B2')},{form.getvalue('B3')},{form.getvalue('B4')},{form.getvalue('B5')}"
+            iCol = f"{form.getvalue('I1')},{form.getvalue('I2')},{form.getvalue('I3')},{form.getvalue('I4')},{form.getvalue('I5')}"
+            nCol = f"{form.getvalue('N1')},{form.getvalue('N2')},0,{form.getvalue('N4')},{form.getvalue('N5')}"
+            gCol = f"{form.getvalue('G1')},{form.getvalue('G2')},{form.getvalue('G3')},{form.getvalue('G4')},{form.getvalue('G5')}"
+            oCol = f"{form.getvalue('O1')},{form.getvalue('O2')},{form.getvalue('O3')},{form.getvalue('O4')},{form.getvalue('O5')}"
+
+            db.changeCard(int(form.getvalue("card-num")), int(form.getvalue("id1")), int(form.getvalue("id2")), bCol, iCol, nCol, gCol, oCol)
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            with open('binGO_pages/binGO_start_page.html', 'rb') as f:
+                self.wfile.write(f.read())
+
+        elif self.path in ['/binGO_delete_card']:
+            form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+            print("Deleting")
+            db.deleteCard(int(form.getvalue("d-card-num")))
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            with open('binGO_pages/binGO_start_page.html', 'rb') as f:
+                self.wfile.write(f.read())
 
 if __name__ == "__main__":
     db = binGO_classes.Database()
