@@ -3,91 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            background-color: black;
-        }
-
-        .start_page_title_div {
-            background-color: antiquewhite;
-            border-radius: 20px;
-            width: 100%;
-        }
-
-        .start_page_buttons_lower_div {
-            width: 100%;
-        }
-
-        .start_page_buttons_upper_div {
-            width: 100%;
-        }
-
-        .title_word {
-            animation: color_animation 4s linear infinite;
-            font: bold;
-            font-size: 60px;
-            font-family: monospace;
-        }
-
-        .title_word_1 {
-            --color_1: black;
-            --color_2: rgb(66, 148, 236);
-        }
-
-        .title_word_2 {
-            --color_1: rgb(66, 148, 236);
-            --color_2: black;
-        }
-
-        @keyframes color_animation {
-            0%    {color: var(--color_1)}
-            50%   {color: var(--color_2)}
-            100%  {color: var(--color_1)}
-            }
-
-    </style>
     <title>BinGO</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        body {
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #27282c;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+        }
+
+        a {
+            position: relative;
+            background: white;
+            color: white;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 1.5em;
+            letter-spacing: 0.1em;
+            font-weight: 400;
+            padding: 5px 30px;
+            transition: 0.5s;
+        }
+
+        a:hover {
+            letter-spacing: 0.25em;
+            background: var(--clr);
+            color: var(--clr);
+            box-shadow: 0 0 35px var(--clr);
+        }
+
+        a:before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: #27282c;
+        }
+
+        a span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .title-div {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: colour_animation 15s infinite;
+            --colour1: palevioletred;
+            --colour2: lime;
+            --colour3: yellow;
+            --colour4: blue;
+            --colour5: orangered;
+        }
+
+        .title {
+            color: whitesmoke;
+            text-shadow: 2px 2px 4px black;
+            text-align: center;
+            font-size: 45px;
+        }
+
+        .button-holder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .button-holder.space-around {
+            justify-content: space-around;
+        }
+
+
+        @keyframes colour_animation {
+            0%    {background: var(--colour1)}
+            10%   {background: black;}
+            20%   {background: var(--colour2)}
+            30%   {background: black;}
+            40%   {background: var(--colour3)}
+            50%   {background: black;}
+            60%   {background: var(--colour4)}
+            70%   {background: black;}
+            80%   {background: var(--colour5)}
+            90%   {background: black;}
+            100%  {background: var(--colour1)}
+        }
+    </style>
 </head>
 <body>
-    <div class="start_page_title_div">
-        <center><h1 class="title_word title_word_1" style="display: inline-block">Bin</h1><h1 class="title_word title_word_2" style="display: inline-block">GO</h1></center>
-    </div>
+    <center>
+        <div class="title-div">
+            <h1 class="title">BinGO</h1>
+        </div>
+    </center>
+    
+    <br>
+    <hr>
+    <br>
+    <br>
 
     <form id="form" action="binGO_play.html" method="post">
         <input id="colour" type="hidden" name="colour"/>
-        <div class="start_page_buttons_div">
-            <div class="start_page_buttons_upper_div">
-                <center>
-                    <button class="start_page_button" onclick="submitPink()">Pink</button>
-                    <button class="start_page_button" onclick="submitGreen()">Green</button>
-                    <button class="start_page_button" onclick="submitYellow()">Yellow</button>
-                </center>
-            </div>
-            <div class="start_page_buttons_lower_div">
-                <center>
-                    <button class="start_page_button" onclick="submitBlue()">Blue</button>
-                    <button class="start_page_button" onclick="submitOrange()">Orange</button>
-                </center>
-            </div>
-            <hr>
-        </div>
+        <div class="button-holder space-around">
+            <a style="--clr:palevioletred" onclick="submitPink()"><span>Pink</span></a>
+            <a style="--clr:lime" onclick="submitGreen()"><span>Green</span></a>
+            <a style="--clr:yellow"onclick="submitYellow()"><span>Yellow</span></a>
+            <a style="--clr:blue" onclick="submitBlue()"><span>Blue</span></a>
+            <a style="--clr:orangered" onclick="submitOrange()"><span>Orange</span></a>
+        </div>     
     </form>
 
-    <form action="binGO_card_page.html" method="post">
-        <div class="start_page_buttons_lower_div">
-            <center>
-                <button class="start_page_button" type="submit">Add Card</button>
-            </center>
-        </div>
-    </form>
+    <br>
+    <br>
+    <hr>
+    <br>
+    <br>
 
-    <form action="binGO_win_page.html" method="post">
-        <div class="start_page_buttons_lower_div">
-            <center>
-                <button class="start_page_button" type="submit">Add Win</button>
-            </center>
-        </div>
-    </form>
+    <p style="color: p"></p>
+    <div class="button-holder space-around">
+        <form id="card-form" action="binGO_card_page.html" method="post">
+            <a style="--clr:purple" onclick="submitCard()"><span>Add Card</span></a>
+        </form>
+
+        <form id="win-form" action="binGO_win_page.html" method="post">
+            <a style="--clr:purple" onclick="submitWin()"><span>Add Win</span></a>
+        </form>
+    </div>
     
     <script>
         function submitPink() {
@@ -113,6 +160,14 @@
         function submitOrange() {
             document.getElementById("colour").value = 5
             document.getElementById("form").submit()
+        }
+
+        function submitCard() {
+            document.getElementById("card-form").submit();
+        }
+
+        function submitWin() {
+            document.getElementById("win-form").submit();
         }
     </script>
 </body>

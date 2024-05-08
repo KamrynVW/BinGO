@@ -9,6 +9,28 @@ PAGE_HEADER = """<!DOCTYPE html>
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                             <style>
+                                .circle-container {
+                                    width: 200px;
+                                    height: 200px;
+                                    border-radius: 50%;
+                                    background-color: #f0f0f0;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    position: relative;
+                                }
+
+                                .input-field {
+                                    position: absolute;
+                                    width: 80%;
+                                    padding: 0.5em;
+                                    border-radius: 5px;
+                                    border: none;
+                                    background-color: #f0f0f0;
+                                    text-align: center;
+                                    font-size: 16px;
+                                }
+
                                 .grid-item {
                                     width: 50px;
                                     height: 50px;
@@ -76,7 +98,7 @@ PAGE_HEADER = """<!DOCTYPE html>
                                     background-color: #3e8e41;
                                 }
                             </style>
-                            <title>BinGO!</title>
+                            <title>BinGO - Play</title>
                         </head>
               """
 
@@ -291,8 +313,11 @@ class binGoHandler(BaseHTTPRequestHandler):
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
                                         </form>
-                                    <center><br>
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button id="end-button" type="submit">End Game</button></form></center><hr id="hr-tag">
+                                    </center><br><br>
+                                    <div class="circle-container">
+                                        <input class="input-field" id="num-input" type="text" value="0"/>
+                                    </div>
+                                    <button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button id="end-button" type="submit">End Game</button></form><hr id="hr-tag">
                                     <div id="parent-grid" class="parent-grid">init</div>"""
                     html += PAGE_AJAX
                     html += """ </body>
@@ -768,6 +793,16 @@ class binGoHandler(BaseHTTPRequestHandler):
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                 <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+                    body {{
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        background: #27282c;
+                        font-family: 'Poppins', sans-serif;
+                        overflow: hidden;
+                    }}
+
                     .container {{
                         display: flex;
                         justify-content: center;
@@ -780,18 +815,75 @@ class binGoHandler(BaseHTTPRequestHandler):
                         grid-template-columns: repeat(5, 100px);
                         grid-template-rows: repeat(5, 100px);
                         gap: 5px;
-                        border: 1px solid black;
+                        border: 3px solid white;
                         padding: 5px;
                     }}
 
-                    .grid-item-0 {{
-                        background-color: lightblue;
-                        border: 1px solid black;
+                
+                    a {{
+                        position: relative;
+                        background: white;
+                        color: white;
+                        text-decoration: none;
+                        text-transform: uppercase;
+                        font-size: 1.5em;
+                        letter-spacing: 0.1em;
+                        font-weight: 400;
+                        padding: 5px 30px;
+                        transition: 0.5s;
+                    }}
+
+                    a:hover {{
+                        letter-spacing: 0.25em;
+                        background: var(--clr);
+                        color: var(--clr);
+                        box-shadow: 0 0 35px var(--clr);
+                    }}
+
+                    a:before {{
+                        content: '';
+                        position: absolute;
+                        inset: 2px;
+                        background: #27282c;
+                    }}
+
+                    a span {{
+                        position: relative;
+                        z-index: 1;
+                    }}
+
+                    label {{
+                        color: whitesmoke;
+                        text-shadow: 2px 2px 4px black;
+                        text-align: center;
+                        font-size: 30px;
+                    }}
+
+                    .name-of-win {{
+                        font-size: 30px;
+                        background-color: #27282c;
+                        color: whitesmoke;
+                    }}
+
+                    .button-holder {{
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        width: 100%;
+                    }}
+
+                    .button-holder.space-around {{
+                        justify-content: space-around;
                     }}
 
                     .grid-item-1 {{
-                        background-color: red;
-                        border: 1px solid black;
+                        background: darkblue;
+                        border: 3px solid white;
+                    }}
+
+                    .grid-item-0 {{
+                        background: slategrey;
+                        border: 3px solid white;
                     }}
 
                 </style>
@@ -828,7 +920,10 @@ class binGoHandler(BaseHTTPRequestHandler):
                     <center>
                         <label for="name">Name of Win:</label>
                         <input value="{win.name}" id="name" name="name" type="text"/>
+                        <br>
+                        <br>
                         <hr>
+                        <br>
                     </center>
 
                     <div class="container">
@@ -865,19 +960,21 @@ class binGoHandler(BaseHTTPRequestHandler):
                     <input type="hidden" value="{winId}" name="win-id" id="win-id"/>
                 </form>
 
-                <button onclick="changeWin()">Change</button>
-                <button onclick="deleteWin()">Delete</button>
+                <div class="button-holder space-around">
+                    <a style="--clr:steelblue" onclick="changeWin()"><span>Change</span></a>
+                    <a style="--clr:steelblue" onclick="deleteWin()"><span>Delete</span></a>
+                </div>
 
                 <script>
                     function flipTile(element, key) {{
                         var computedStyle = window.getComputedStyle(element);
                         var currentColour = computedStyle.backgroundColor;
                         
-                        if (currentColour === 'rgb(173, 216, 230)') {{
-                            element.style.backgroundColor = 'red';
+                        if (currentColour === 'rgb(112, 128, 144)') {{
+                            element.style.backgroundColor = 'darkblue';
                             document.getElementById(key).value = 1;
                         }} else {{
-                            element.style.backgroundColor = 'rgb(173, 216, 230)';
+                            element.style.backgroundColor = 'rgb(112, 128, 144)';
                             document.getElementById(key).value = 0
                         }}
                     }}
