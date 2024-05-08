@@ -872,10 +872,6 @@ class binGoHandler(BaseHTTPRequestHandler):
                         width: 100%;
                     }}
 
-                    .button-holder.space-around {{
-                        justify-content: space-around;
-                    }}
-
                     .grid-item-1 {{
                         background: darkblue;
                         border: 3px solid white;
@@ -960,11 +956,10 @@ class binGoHandler(BaseHTTPRequestHandler):
                     <input type="hidden" value="{winId}" name="win-id" id="win-id"/>
                 </form>
 
-                <div class="button-holder space-around">
+                <div class="button-holder">
                     <a style="--clr:steelblue" onclick="changeWin()"><span>Change</span></a>
                     <a style="--clr:steelblue" onclick="deleteWin()"><span>Delete</span></a>
                 </div>
-
                 <script>
                     function flipTile(element, key) {{
                         var computedStyle = window.getComputedStyle(element);
