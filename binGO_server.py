@@ -160,10 +160,32 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                 }
 
                                 .input-field {
-                                    width: 60px;
+                                    width: 100px;
                                     background: #27282c;
                                     color: white;
                                     font-size: 35px;
+                                    text-shadow: 2px 2px 4px black;
+                                    text-align: center;
+                                }
+                                
+                                .win-post {
+                                    width: 100%;
+                                    background: #27282c;
+                                    justify-content: center;
+                                    align-items: center;
+                                    display: flex;
+                                }
+                                
+                                .win-heading {
+                                    color: white;
+                                    font-size: 30px;
+                                    text-shadow: 2px 2px 4px black;
+                                    text-align: center;
+                                }
+                                
+                                .id-heading {
+                                    color: white;
+                                    font-size: 20px;
                                     text-shadow: 2px 2px 4px black;
                                     text-align: center;
                                 }"""
@@ -343,9 +365,9 @@ PAGE_AJAX = f""" <script>
                         type: 'POST',
                         data: {{value: name}},
                         success: function(response) {{
-                            var dialogBox = document.getElementById('dialogBox');
-                            if (dialogBox) {{
-                                dialogBox.remove();
+                            var winPost = document.getElementById('win-post');
+                            if (winPost) {{
+                                winPost.remove();
                             }}
                             updateContent();
                         }}
@@ -390,12 +412,12 @@ PAGE_AJAX = f""" <script>
                                                     type: 'GET',
                                                     success: function(response) {{
                                                         var middleID = parseInt(response);
-                                                        var dialog = document.getElementById('dialog');
+                                                        var winPost = document.getElementById('win-post');
 
-                                                        if (dialog) {{
-                                                            dialog.innerHTML = '<h1>Winner!</h1><h2>Middle ID: ' + middleID + ', Back ID: ' + backID + '</h2>';
+                                                        if (winPost) {{
+                                                            winPost.innerHTML = "<div style='width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><br><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + "</div><hr>"
                                                         }} else {{
-                                                            document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<div class='dialog-holder' id='dialogBox'><dialog'id='dialog' open><h1>Winner!</h1><h2>Middle ID: " + middleID + ", Back ID: " + backID + "</dialog><br><br><br><br><br><br><br><br><br><br><div>");
+                                                            document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<div id='win-post'><div style='width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><br><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + "</div><hr></div>");
                                                         }}
                                                     }}
                                                 }});
@@ -441,6 +463,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == '/' or self.path in ['/binGO_start_page.html']:
+            self.server.winnerCard = None
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
@@ -511,11 +534,22 @@ class binGoHandler(BaseHTTPRequestHandler):
                 if cardIndexes is None:
                     html += PAGE_NO_CARDS
                 else:
+                    if self.server.numbersCalled is not None:
+                        recall = 1
+                    else:
+                        recall = 0
+
                     cardArray = []
                     for index in cardIndexes:
                         card = db.writeCard(index)
                         cardArray.append(card)
                         self.server.cards = cardArray
+
+                    if recall:
+                        for card in self.server.cards:
+                            win = card.reapplyWin(self.server.winCondition, self.server.numbersCalled)
+                            if win:
+                                self.server.winnerCard = card
 
                     winNames = db.getAllWinNames()
                     winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
@@ -583,11 +617,22 @@ class binGoHandler(BaseHTTPRequestHandler):
                 if cardIndexes is None:
                     html += PAGE_NO_CARDS
                 else:
+                    if self.server.numbersCalled is not None:
+                        recall = 1
+                    else:
+                        recall = 0
+
                     cardArray = []
                     for index in cardIndexes:
                         card = db.writeCard(index)
                         cardArray.append(card)
                         self.server.cards = cardArray
+
+                    if recall:
+                        for card in self.server.cards:
+                            win = card.reapplyWin(self.server.winCondition, self.server.numbersCalled)
+                            if win:
+                                self.server.winnerCard = card
 
                     winNames = db.getAllWinNames()
                     winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
@@ -655,11 +700,22 @@ class binGoHandler(BaseHTTPRequestHandler):
                 if cardIndexes is None:
                     html += PAGE_NO_CARDS
                 else:
+                    if self.server.numbersCalled is not None:
+                        recall = 1
+                    else:
+                        recall = 0
+
                     cardArray = []
                     for index in cardIndexes:
                         card = db.writeCard(index)
                         cardArray.append(card)
                         self.server.cards = cardArray
+
+                    if recall:
+                        for card in self.server.cards:
+                            win = card.reapplyWin(self.server.winCondition, self.server.numbersCalled)
+                            if win:
+                                self.server.winnerCard = card
 
                     winNames = db.getAllWinNames()
                     winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
@@ -727,11 +783,22 @@ class binGoHandler(BaseHTTPRequestHandler):
                 if cardIndexes is None:
                     html += PAGE_NO_CARDS
                 else:
+                    if self.server.numbersCalled is not None:
+                        recall = 1
+                    else:
+                        recall = 0
+
                     cardArray = []
                     for index in cardIndexes:
                         card = db.writeCard(index)
                         cardArray.append(card)
                         self.server.cards = cardArray
+
+                    if recall:
+                        for card in self.server.cards:
+                            win = card.reapplyWin(self.server.winCondition, self.server.numbersCalled)
+                            if win:
+                                self.server.winnerCard = card
 
                     winNames = db.getAllWinNames()
                     winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
@@ -799,11 +866,22 @@ class binGoHandler(BaseHTTPRequestHandler):
                 if cardIndexes is None:
                     html += PAGE_NO_CARDS
                 else:
+                    if self.server.numbersCalled is not None:
+                        recall = 1
+                    else:
+                        recall = 0
+
                     cardArray = []
                     for index in cardIndexes:
                         card = db.writeCard(index)
                         cardArray.append(card)
                         self.server.cards = cardArray
+
+                    if recall:
+                        for card in self.server.cards:
+                            win = card.reapplyWin(self.server.winCondition, self.server.numbersCalled)
+                            if win:
+                                self.server.winnerCard = card
                         
                     winNames = db.getAllWinNames()
                     winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
@@ -978,7 +1056,6 @@ class binGoHandler(BaseHTTPRequestHandler):
 
         elif self.path in ['/binGO_end_game.html']:
             self.server.cards = []
-            self.server.winnerCard = None
             self.server.numbersCalled = []
 
             self.send_response(200)
@@ -998,7 +1075,9 @@ class binGoHandler(BaseHTTPRequestHandler):
             nameOfWin = self.server.winCondition.name
 
             for card in self.server.cards:
-                card.reapplyWin(self.server.winCondition, self.server.numbersCalled)
+                win = card.reapplyWin(self.server.winCondition, self.server.numbersCalled)
+                if win:
+                    self.server.winnerCard = card
 
             self.send_response(200)
             self.end_headers()
@@ -1525,5 +1604,8 @@ class binGoHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     db = binGO_classes.Database()
+    """for i in range(0, 100):
+        card = binGO_classes.Card('blue', 57, 89, [1,1,1,1,1], [20,20,20,20,20], [40,40,40,40,40], [50,50,50,50,50], [70,70,70,70,70])
+        db.readCard(card)"""
     httpd = binGoServer(('localhost', 8000), binGoHandler)
     httpd.serve_forever()

@@ -325,8 +325,14 @@ class Card():
         for tile in self.oCol:
             tile[1] = 0
 
+        win = []
         for number in numbers:
-            self.flipTileBit(number, winCondition)
+            win.append(self.flipTileBit(number, winCondition))
+
+        if 1 in win:
+            return 1
+        else:
+            return 0
 
 
 class WinCondition():
