@@ -16,6 +16,12 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                     box-sizing: border-box;
                                 }
 
+                                input[type=number]::-webkit-inner-spin-button, 
+                                input[type=number]::-webkit-outer-spin-button { 
+                                    -webkit-appearance: none; 
+                                    margin: 0; 
+                                }
+
                                 body {
                                     justify-content: center;
                                     align-items: center;
@@ -153,7 +159,7 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                 }
 
                                 .input-holder {
-                                    background: #27282c;
+                                    background: slategrey;
                                     justify-content: center;
                                     align-items: center;
                                     display: flex;
@@ -188,6 +194,16 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                     font-size: 20px;
                                     text-shadow: 2px 2px 4px black;
                                     text-align: center;
+                                }
+                                
+                                .fixed-hanger {
+                                    margin: 0;
+                                    padding: 0;
+                                    overflow: hidden;
+                                    position: fixed;
+                                    top: 0;
+                                    width: 100%;
+                                    background: slategrey;
                                 }"""
 
 PAGE_HEADER_PINK = """  .item-1 {
@@ -554,8 +570,17 @@ class binGoHandler(BaseHTTPRequestHandler):
                     winNames = db.getAllWinNames()
                     winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
                     winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
-
+                    
                     html += """ <body>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <div class="fixed-hanger">
                                     <div style="padding: 5px; position: fixed; top: 0; width: 100%; background: black; justify-content: center; align-items: center; display: flex;">
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
@@ -595,11 +620,12 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                                     <div class="input-holder">
                                         <label for="num-input">Call Number:</label>
-                                        <input class="input-field" id="num-input" type="text" value="0"/>
+                                        <input class="input-field" id="num-input" type="number" value="0"/>
                                     </div>
 
                                     <br>
                                     <hr id="hr-tag">
+                                    </div>
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -639,6 +665,15 @@ class binGoHandler(BaseHTTPRequestHandler):
                     winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
                     html += """ <body>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <div class="fixed-hanger">
                                     <div style="padding: 5px; position: fixed; top: 0; width: 100%; background: black; justify-content: center; align-items: center; display: flex;">
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
@@ -683,6 +718,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                                     <br>
                                     <hr id="hr-tag">
+                                    </div>
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -722,6 +758,15 @@ class binGoHandler(BaseHTTPRequestHandler):
                     winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
                     html += """ <body>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <div class="fixed-hanger">
                                     <div style="padding: 5px; position: fixed; top: 0; width: 100%; background: black; justify-content: center; align-items: center; display: flex;">
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
@@ -766,6 +811,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                                     <br>
                                     <hr id="hr-tag">
+                                    </div>
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -805,6 +851,15 @@ class binGoHandler(BaseHTTPRequestHandler):
                     winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
                     html += """ <body>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <div class="fixed-hanger">
                                     <div style="padding: 5px; position: fixed; top: 0; width: 100%; background: black; justify-content: center; align-items: center; display: flex;">
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
@@ -849,6 +904,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                                     <br>
                                     <hr id="hr-tag">
+                                    </div>
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -888,6 +944,15 @@ class binGoHandler(BaseHTTPRequestHandler):
                     winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
                     html += """ <body>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <div class="fixed-hanger">
                                     <div style="padding: 5px; position: fixed; top: 0; width: 100%; background: black; justify-content: center; align-items: center; display: flex;">
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
@@ -932,6 +997,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                                     <br>
                                     <hr id="hr-tag">
+                                    </div>
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -1604,7 +1670,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     db = binGO_classes.Database()
-    """for i in range(0, 100):
+    """for i in range(0, 200):
         card = binGO_classes.Card('blue', 57, 89, [1,1,1,1,1], [20,20,20,20,20], [40,40,40,40,40], [50,50,50,50,50], [70,70,70,70,70])
         db.readCard(card)"""
     httpd = binGoServer(('localhost', 8000), binGoHandler)

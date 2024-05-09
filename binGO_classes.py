@@ -334,7 +334,6 @@ class Card():
         else:
             return 0
 
-
 class WinCondition():
     def __init__(self, name, col1, col2, col3, col4, col5):
         self.name = name
