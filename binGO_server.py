@@ -2,42 +2,72 @@ import binGO_classes
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import cgi
 
-PAGE_HEADER = """<!DOCTYPE html>
+PAGE_HEADER_P1 = """<!DOCTYPE html>
                     <html lang="en">
                         <head>
                             <meta charset="UTF-8">
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                             <style>
-                                .circle-container {
-                                    width: 200px;
-                                    height: 200px;
-                                    border-radius: 50%;
-                                    background-color: #f0f0f0;
-                                    display: flex;
+                                @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+                                * {
+                                    margin: 0;
+                                    padding: 0;
+                                    box-sizing: border-box;
+                                }
+
+                                body {
                                     justify-content: center;
                                     align-items: center;
+                                    min-height: 100vh;
+                                    background: #27282c;
+                                    font-family: 'Poppins', sans-serif;
+                                }
+
+                                a {
                                     position: relative;
+                                    background: white;
+                                    color: white;
+                                    text-decoration: none;
+                                    text-transform: uppercase;
+                                    font-size: 1.5em;
+                                    letter-spacing: 0.1em;
+                                    font-weight: 400;
+                                    padding: 5px 30px;
+                                    transition: 0.5s;
                                 }
 
-                                .input-field {
+                                a:hover {
+                                    letter-spacing: 0.25em;
+                                    background: var(--clr);
+                                    color: var(--clr);
+                                    box-shadow: 0 0 35px var(--clr);
+                                }
+
+                                a:before {
+                                    content: '';
                                     position: absolute;
-                                    width: 80%;
-                                    padding: 0.5em;
-                                    border-radius: 5px;
-                                    border: none;
-                                    background-color: #f0f0f0;
-                                    text-align: center;
-                                    font-size: 16px;
+                                    inset: 2px;
+                                    background: #27282c;
                                 }
 
-                                .grid-item {
-                                    width: 50px;
-                                    height: 50px;
-                                    border: 1px solid black;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
+                                a span {
+                                    position: relative;
+                                    z-index: 1;
+                                }
+
+                                .heading {
+                                    color: white;
+                                    font-size: 40px;
+                                    text-align: center;
+                                    text-shadow: 2px 2px 4px black;
+                                }
+
+                                .heading2 {
+                                    color: white;
+                                    font-size: 30px;
+                                    text-align: center;
+                                    text-shadow: 2px 2px 4px black;
                                 }
 
                                 .grid-container {
@@ -54,12 +84,8 @@ PAGE_HEADER = """<!DOCTYPE html>
                                     gap: 20px;
                                 }
 
-                                .item-1 {
-                                    background-color: yellow;    
-                                }
-
                                 .dropbtn {
-                                    background-color: #4CAF50;
+                                    background-color: #27282c;
                                     color: white;
                                     padding: 16px;
                                     font-size: 16px;
@@ -76,7 +102,7 @@ PAGE_HEADER = """<!DOCTYPE html>
                                 .dropdown-content {
                                     display: none;
                                     position: absolute;
-                                    background-color: #f9f9f9;
+                                    background: #27282c;
                                     min-width: 160px;
                                     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
                                     z-index: 1;
@@ -88,19 +114,208 @@ PAGE_HEADER = """<!DOCTYPE html>
                                     display: block;
                                 }
 
-                                .dropdown-content div:hover {background-color: #f1f1f1}
+                                .dropdown-content div:hover {
+                                    background: slategrey
+                                }
 
                                 .dropdown:hover .dropdown-content {
                                     display: block;
                                 }
 
                                 .dropdown:hover .dropbtn {
-                                    background-color: #3e8e41;
+                                    background: slategrey;
                                 }
-                            </style>
+
+                                .button-holder {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    width: 100%;
+                                }
+
+                                .end-holder {
+                                    display: flex;
+                                    justify-content: right;
+                                    align-items: right;
+                                    width: 100%;
+                                    padding: 10px;
+                                }
+
+                                .button-holder.space-around {
+                                    justify-content: space-around;
+                                }
+
+                                label {
+                                    color: whitesmoke;
+                                    text-shadow: 2px 2px 4px black;
+                                    text-align: center;
+                                    font-size: 30px;
+                                }
+
+                                .input-holder {
+                                    background: #27282c;
+                                    justify-content: center;
+                                    align-items: center;
+                                    display: flex;
+                                }
+
+                                .input-field {
+                                    width: 60px;
+                                    background: #27282c;
+                                    color: white;
+                                    font-size: 35px;
+                                    text-shadow: 2px 2px 4px black;
+                                    text-align: center;
+                                }"""
+
+PAGE_HEADER_PINK = """  .item-1 {
+                            background-color: palevioletred;    
+                        }
+
+                        .grid-item-0 {
+                            width: 50px;
+                            height: 50px;
+                            border: 1px solid black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: white;
+                            font-size: 20px;
+                            text-shadow: 2px 2px 4px black;
+                        }
+
+                        .grid-item-1 {
+                            width: 50px;
+                            height: 50px;
+                            border: 1px solid black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: white;
+                            font-size: 20px;
+                            text-shadow: 2px 2px 4px black;
+                            box-shadow: 0 0 25px palevioletred;
+                        }"""
+
+PAGE_HEADER_GREEN = """ .item-1 {
+                            background-color: lime;    
+                        }
+
+                        .grid-item-0 {
+                            width: 50px;
+                            height: 50px;
+                            border: 1px solid black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: white;
+                            font-size: 20px;
+                            text-shadow: 2px 2px 4px black;
+                        }
+
+                        .grid-item-1 {
+                            width: 50px;
+                            height: 50px;
+                            border: 1px solid black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: white;
+                            font-size: 20px;
+                            text-shadow: 2px 2px 4px black;
+                            box-shadow: 0 0 25px lime;
+                        }"""
+
+PAGE_HEADER_YELLOW = """ .item-1 {
+                            background-color: yellow;
+                        }
+
+                        .grid-item-0 {
+                            width: 50px;
+                            height: 50px;
+                            border: 1px solid black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: white;
+                            font-size: 20px;
+                            text-shadow: 2px 2px 4px black;
+                        }
+
+                        .grid-item-1 {
+                            width: 50px;
+                            height: 50px;
+                            border: 1px solid black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: white;
+                            font-size: 20px;
+                            text-shadow: 2px 2px 4px black;
+                            box-shadow: 0 0 25px yellow;
+                        }"""
+
+PAGE_HEADER_BLUE = """ .item-1 {
+                            background-color: blue;    
+                        }
+
+                        .grid-item-0 {
+                            width: 50px;
+                            height: 50px;
+                            border: 1px solid black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: white;
+                            font-size: 20px;
+                            text-shadow: 2px 2px 4px black;
+                        }
+                        
+                        .grid-item-1 {
+                            width: 50px;
+                            height: 50px;
+                            border: 1px solid black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: white;
+                            font-size: 20px;
+                            text-shadow: 2px 2px 4px black;
+                            box-shadow: 0 0 25px blue;
+                        }"""
+
+PAGE_HEADER_ORANGE = """ .item-1 {
+                            background-color: orangered;
+                        }
+
+                        .grid-item-0 {
+                            width: 50px;
+                            height: 50px;
+                            border: 1px solid black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: white;
+                            font-size: 20px;
+                            text-shadow: 2px 2px 4px black;
+                        }
+                        
+                        .grid-item-1 {
+                            width: 50px;
+                            height: 50px;
+                            border: 1px solid black;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: white;
+                            font-size: 20px;
+                            text-shadow: 2px 2px 4px black;
+                            box-shadow: 0 0 25px orangered;
+                        }"""
+
+PAGE_HEADER_P2 = """</style>
                             <title>BinGO - Play</title>
-                        </head>
-              """
+                        </head>"""
 
 PAGE_AJAX = f""" <script>
                     $(document).ready(function(){{
@@ -135,6 +350,10 @@ PAGE_AJAX = f""" <script>
                             updateContent();
                         }}
                     }});
+                }}
+
+                function endGame() {{
+                    document.getElementById("end-game-form").submit();
                 }}
 
                 function editOrDeleteWin(name) {{
@@ -176,7 +395,7 @@ PAGE_AJAX = f""" <script>
                                                         if (dialog) {{
                                                             dialog.innerHTML = '<h1>Winner!</h1><h2>Middle ID: ' + middleID + ', Back ID: ' + backID + '</h2>';
                                                         }} else {{
-                                                            document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<div id='dialogBox'><dialog id='dialog' open><h1>Winner!</h1><h2>Middle ID: " + middleID + ", Back ID: " + backID + "</dialog><br><br><br><br><br><br><br><br><br><br><div>");
+                                                            document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<div class='dialog-holder' id='dialogBox'><dialog'id='dialog' open><h1>Winner!</h1><h2>Middle ID: " + middleID + ", Back ID: " + backID + "</dialog><br><br><br><br><br><br><br><br><br><br><div>");
                                                         }}
                                                     }}
                                                 }});
@@ -192,6 +411,23 @@ PAGE_AJAX = f""" <script>
                 }}
 
                 </script>"""
+
+PAGE_NO_CARDS = """ <body>
+                        <h1 class="heading">No cards have been created for this colour.</h1><br>
+                        <h2 class="heading2">You can create a new card, or return to the main menu.</h2>
+
+                        <br>
+                        <br>
+                        <hr>
+                        <br>
+                        <br>
+
+                        <div class="button-holder space-around">
+                            <a style="--clr:lime" href="binGO_card_page.html"><span>New Card</span></a>
+                            <a style="--clr:red" href="binGO_start_page.html"><span>Main Menu</span></a>
+                        </div>
+                    </body>
+                </html>"""
 
 class binGoServer(HTTPServer):
     def __init__(self, address, handler):
@@ -264,18 +500,16 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             colour = int(form.getvalue('colour'))
 
-            html = PAGE_HEADER
+            html = PAGE_HEADER_P1
 
             # 1 = Pink, 2 = Green, 3 = Yellow, 4 = Blue, 5 = Orange
             if colour == 1:
+                html += PAGE_HEADER_PINK
+                html += PAGE_HEADER_P2
                 cardIndexes = db.getCardsByColour("pink")
 
                 if cardIndexes is None:
-                    html += """ <body style="background-color: pink;">
-                                    <h1>You have no entered cards for Pink. Enter some by clicking on the taskbar, or clicking <a href="binGO_card_page.html">here.</a></h1>
-                                    <h1>You can also click <a href="binGO_card_page.html">here</a> to return to the main menu.</h1>
-                                </body>
-                            </html>"""
+                    html += PAGE_NO_CARDS
                 else:
                     cardArray = []
                     for index in cardIndexes:
@@ -284,11 +518,11 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards = cardArray
 
                     winNames = db.getAllWinNames()
-                    winNamesHTML = ''.join(f"""<div><h3 onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
-                    winNamesCDHTML = ''.join(f"""<div><h3 onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
+                    winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
+                    winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
-                    html += """ <body style="background-color: pink;">
-                                    <center>
+                    html += """ <body>
+                                    <div style="padding: 5px; position: fixed; top: 0; width: 100%; background: black; justify-content: center; align-items: center; display: flex;">
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Win</button>
@@ -313,25 +547,41 @@ class binGoHandler(BaseHTTPRequestHandler):
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
                                         </form>
-                                    </center><br><br>
-                                    <div class="circle-container">
+                                    </div>
+                                    
+                                    <br>
+                                    <br>
+                                    <br>
+
+                                    <div class="end-holder">
+                                        <form id="end-game-form" action="/binGO_end_game.html" method="post">
+                                            <a style="--clr:red" onclick="endGame()"><span>End Game</span></a>
+                                        </form>
+                                    </div>
+
+                                    <div class="input-holder">
+                                        <label for="num-input">Call Number:</label>
                                         <input class="input-field" id="num-input" type="text" value="0"/>
                                     </div>
-                                    <button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button id="end-button" type="submit">End Game</button></form><hr id="hr-tag">
-                                    <div id="parent-grid" class="parent-grid">init</div>"""
+
+                                    <br>
+                                    <hr id="hr-tag">
+                                    <br>
+
+                                    <div id="parent-grid" class="parent-grid"></div>"""
+                    
                     html += PAGE_AJAX
+
                     html += """ </body>
                                 </html>"""
 
             elif colour == 2:
+                html += PAGE_HEADER_GREEN
+                html += PAGE_HEADER_P2
                 cardIndexes = db.getCardsByColour("green")
 
                 if cardIndexes is None:
-                    html += """ <body style="background-color: green;">
-                                    <h1>You have no entered cards for Green. Enter some by clicking on the taskbar, or clicking <a href="binGO_card_page.html">here.</a></h1>
-                                    <h1>You can also click <a href="binGO_start_page.html">here</a> to return to the main menu.</h1>
-                                </body>
-                            </html>"""
+                    html += PAGE_NO_CARDS
                 else:
                     cardArray = []
                     for index in cardIndexes:
@@ -340,10 +590,11 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards = cardArray
 
                     winNames = db.getAllWinNames()
-                    winNamesHTML = ''.join(f"""<div onclick="changeWin('{name}')"><h1>{name}</h1></div>""" for name in winNames)
+                    winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
+                    winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
-                    html += """ <body style="background-color: pink;">
-                                    <center>
+                    html += """ <body>
+                                    <div style="padding: 5px; position: fixed; top: 0; width: 100%; background: black; justify-content: center; align-items: center; display: flex;">
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Win</button>
@@ -351,30 +602,58 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         </form>"""
                     html +=        f""" <div class="dropdown">
                                             <button class="dropbtn">Apply New Win</button>
-                                                <div class="dropdown-content">
-                                                {winNamesHTML}
-                                                </div>
+                                            <div class="dropdown-content">
+                                            {winNamesHTML}
+                                            </div>
                                         </div>"""
+                    html +=         f"""<form id="win-edit-delete-form" action="/binGO_edit_delete_win.html" method="post" style="display: inline">
+                                            <div class="dropdown">
+                                                <button class="dropbtn">Edit/Delete Win</button>
+                                                <div class="dropdown-content">
+                                                {winNamesCDHTML}
+                                                </div>
+                                            </div>
+                                        </form>"""
                     html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
                                         </form>
-                                    <center><br>
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
-                                    <div id="parent-grid" class="parent-grid">init</div>"""
+                                    </div>
+                                    
+                                    <br>
+                                    <br>
+                                    <br>
+
+                                    <div class="end-holder">
+                                        <form id="end-game-form" action="/binGO_end_game.html" method="post">
+                                            <a style="--clr:red" onclick="endGame()"><span>End Game</span></a>
+                                        </form>
+                                    </div>
+
+                                    <div class="input-holder">
+                                        <label for="num-input">Call Number:</label>
+                                        <input class="input-field" id="num-input" type="text" value="0"/>
+                                    </div>
+
+                                    <br>
+                                    <hr id="hr-tag">
+                                    <br>
+
+                                    <div id="parent-grid" class="parent-grid"></div>"""
+                    
                     html += PAGE_AJAX
+
                     html += """ </body>
                                 </html>"""
+                    
             elif colour == 3:
+                html += PAGE_HEADER_YELLOW
+                html += PAGE_HEADER_P2
                 cardIndexes = db.getCardsByColour("yellow")
 
                 if cardIndexes is None:
-                    html += """ <body style="background-color: #FFD800;">
-                                    <h1>You have no entered cards for Yellow. Enter some by clicking on the taskbar, or clicking <a href="binGO_card_page.html">here.</a></h1>
-                                    <h1>You can also click <a href="binGO_start_page.html">here</a> to return to the main menu.</h1>
-                                </body>
-                            </html>"""
+                    html += PAGE_NO_CARDS
                 else:
                     cardArray = []
                     for index in cardIndexes:
@@ -383,10 +662,11 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards = cardArray
 
                     winNames = db.getAllWinNames()
-                    winNamesHTML = ''.join(f"""<div onclick="changeWin('{name}')"><h1>{name}</h1></div>""" for name in winNames)
+                    winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
+                    winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
-                    html += """ <body style="background-color: pink;">
-                                    <center>
+                    html += """ <body>
+                                    <div style="padding: 5px; position: fixed; top: 0; width: 100%; background: black; justify-content: center; align-items: center; display: flex;">
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Win</button>
@@ -394,32 +674,58 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         </form>"""
                     html +=        f""" <div class="dropdown">
                                             <button class="dropbtn">Apply New Win</button>
-                                                <div class="dropdown-content">
-                                                {winNamesHTML}
-                                                </div>
+                                            <div class="dropdown-content">
+                                            {winNamesHTML}
+                                            </div>
                                         </div>"""
+                    html +=         f"""<form id="win-edit-delete-form" action="/binGO_edit_delete_win.html" method="post" style="display: inline">
+                                            <div class="dropdown">
+                                                <button class="dropbtn">Edit/Delete Win</button>
+                                                <div class="dropdown-content">
+                                                {winNamesCDHTML}
+                                                </div>
+                                            </div>
+                                        </form>"""
                     html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
                                         </form>
-                                    <center><br>
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
-                                    <div id="parent-grid" class="parent-grid">init</div>"""
+                                    </div>
+                                    
+                                    <br>
+                                    <br>
+                                    <br>
+
+                                    <div class="end-holder">
+                                        <form id="end-game-form" action="/binGO_end_game.html" method="post">
+                                            <a style="--clr:red" onclick="endGame()"><span>End Game</span></a>
+                                        </form>
+                                    </div>
+
+                                    <div class="input-holder">
+                                        <label for="num-input">Call Number:</label>
+                                        <input class="input-field" id="num-input" type="text" value="0"/>
+                                    </div>
+
+                                    <br>
+                                    <hr id="hr-tag">
+                                    <br>
+
+                                    <div id="parent-grid" class="parent-grid"></div>"""
                     
                     html += PAGE_AJAX
+
                     html += """ </body>
                                 </html>"""
 
             elif colour == 4:
+                html += PAGE_HEADER_BLUE
+                html += PAGE_HEADER_P2
                 cardIndexes = db.getCardsByColour("blue")
 
                 if cardIndexes is None:
-                    html += """ <body style="background-color: blue;">
-                                    <h1>You have no entered cards for Blue. Enter some by clicking on the taskbar, or clicking <a href="binGO_card_page.html">here.</a></h1>
-                                    <h1>You can also click <a href="binGO_start_page.html">here</a> to return to the main menu.</h1>
-                                </body>
-                            </html>"""
+                    html += PAGE_NO_CARDS
                 else:
                     cardArray = []
                     for index in cardIndexes:
@@ -428,10 +734,11 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards = cardArray
 
                     winNames = db.getAllWinNames()
-                    winNamesHTML = ''.join(f"""<div onclick="changeWin('{name}')"><h1>{name}</h1></div>""" for name in winNames)
+                    winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
+                    winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
-                    html += """ <body style="background-color: pink;">
-                                    <center>
+                    html += """ <body>
+                                    <div style="padding: 5px; position: fixed; top: 0; width: 100%; background: black; justify-content: center; align-items: center; display: flex;">
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Win</button>
@@ -439,31 +746,58 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         </form>"""
                     html +=        f""" <div class="dropdown">
                                             <button class="dropbtn">Apply New Win</button>
-                                                <div class="dropdown-content">
-                                                {winNamesHTML}
-                                                </div>
+                                            <div class="dropdown-content">
+                                            {winNamesHTML}
+                                            </div>
                                         </div>"""
+                    html +=         f"""<form id="win-edit-delete-form" action="/binGO_edit_delete_win.html" method="post" style="display: inline">
+                                            <div class="dropdown">
+                                                <button class="dropbtn">Edit/Delete Win</button>
+                                                <div class="dropdown-content">
+                                                {winNamesCDHTML}
+                                                </div>
+                                            </div>
+                                        </form>"""
                     html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
                                         </form>
-                                    <center><br>
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
-                                    <div id="parent-grid" class="parent-grid">init</div>"""
+                                    </div>
+                                    
+                                    <br>
+                                    <br>
+                                    <br>
+
+                                    <div class="end-holder">
+                                        <form id="end-game-form" action="/binGO_end_game.html" method="post">
+                                            <a style="--clr:red" onclick="endGame()"><span>End Game</span></a>
+                                        </form>
+                                    </div>
+
+                                    <div class="input-holder">
+                                        <label for="num-input">Call Number:</label>
+                                        <input class="input-field" id="num-input" type="text" value="0"/>
+                                    </div>
+
+                                    <br>
+                                    <hr id="hr-tag">
+                                    <br>
+
+                                    <div id="parent-grid" class="parent-grid"></div>"""
+                    
                     html += PAGE_AJAX
+
                     html += """ </body>
                                 </html>"""
 
             else:
+                html += PAGE_HEADER_ORANGE
+                html += PAGE_HEADER_P2
                 cardIndexes = db.getCardsByColour("orange")
 
                 if cardIndexes is None:
-                    html += """ <body style="background-color: orange;">
-                                    <h1>You have no entered cards for Orange. Enter some by clicking on the taskbar, or clicking <a href="binGO_card_page.html">here.</a></h1>
-                                    <h1>You can also click <a href="binGO_start_page.html">here</a> to return to the main menu.</h1>
-                                </body>
-                            </html>"""
+                    html += PAGE_NO_CARDS
                 else:
                     cardArray = []
                     for index in cardIndexes:
@@ -472,10 +806,11 @@ class binGoHandler(BaseHTTPRequestHandler):
                         self.server.cards = cardArray
                         
                     winNames = db.getAllWinNames()
-                    winNamesHTML = ''.join(f"""<div onclick="changeWin('{name}')"><h1>{name}</h1></div>""" for name in winNames)
+                    winNamesHTML = ''.join(f"""<div><h3 class="heading2" onclick="changeWin('{name}')">{name}</h3></div>""" for name in winNames)
+                    winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
-                    html += """ <body style="background-color: pink;">
-                                    <center>
+                    html += """ <body>
+                                    <div style="padding: 5px; position: fixed; top: 0; width: 100%; background: black; justify-content: center; align-items: center; display: flex;">
                                         <form action="/binGO_win_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Win</button>
@@ -483,19 +818,48 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         </form>"""
                     html +=        f""" <div class="dropdown">
                                             <button class="dropbtn">Apply New Win</button>
-                                                <div class="dropdown-content">
-                                                {winNamesHTML}
-                                                </div>
+                                            <div class="dropdown-content">
+                                            {winNamesHTML}
+                                            </div>
                                         </div>"""
+                    html +=         f"""<form id="win-edit-delete-form" action="/binGO_edit_delete_win.html" method="post" style="display: inline">
+                                            <div class="dropdown">
+                                                <button class="dropbtn">Edit/Delete Win</button>
+                                                <div class="dropdown-content">
+                                                {winNamesCDHTML}
+                                                </div>
+                                            </div>
+                                        </form>"""
                     html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
                                         </form>
-                                    <center><br>
-                                    <center><input id="num-input" type="number" value="0"/><button id="enter-num">Submit</button><form action="/binGO_end_game.html" method="post"><button type="submit">End Game</button></form></center><hr id="hr-tag">
-                                    <div id="parent-grid" class="parent-grid">init</div>"""
+                                    </div>
+                                    
+                                    <br>
+                                    <br>
+                                    <br>
+
+                                    <div class="end-holder">
+                                        <form id="end-game-form" action="/binGO_end_game.html" method="post">
+                                            <a style="--clr:red" onclick="endGame()"><span>End Game</span></a>
+                                        </form>
+                                    </div>
+
+                                    <div class="input-holder">
+                                        <label for="num-input">Call Number:</label>
+                                        <input class="input-field" id="num-input" type="text" value="0"/>
+                                    </div>
+
+                                    <br>
+                                    <hr id="hr-tag">
+                                    <br>
+
+                                    <div id="parent-grid" class="parent-grid"></div>"""
+                    
                     html += PAGE_AJAX
+
                     html += """ </body>
                                 </html>"""
 
@@ -526,31 +890,31 @@ class binGoHandler(BaseHTTPRequestHandler):
                 cardHtml += f"""<form id="change-delete-{i}" action="binGO_edit_delete_card.html" method="post">
                                 <input type="hidden" id="card-num" name="card-num" value="{i}"/>
                                 <div onclick="editOrDelete('{i}')" class="grid-container">"""
-                cardHtml += f"""<div class="grid-item item-{card.bCol[0][1]}">{card.bCol[0][0]}</div>
-                            <div class="grid-item item-{card.iCol[0][1]}">{card.iCol[0][0]}</div>
-                            <div class="grid-item item-{card.nCol[0][1]}">{card.nCol[0][0]}</div>
-                            <div class="grid-item item-{card.gCol[0][1]}">{card.gCol[0][0]}</div>
-                            <div class="grid-item item-{card.oCol[0][1]}">{card.oCol[0][0]}</div>
-                            <div class="grid-item item-{card.bCol[1][1]}">{card.bCol[1][0]}</div>
-                            <div class="grid-item item-{card.iCol[1][1]}">{card.iCol[1][0]}</div>
-                            <div class="grid-item item-{card.nCol[1][1]}">{card.nCol[1][0]}</div>
-                            <div class="grid-item item-{card.gCol[1][1]}">{card.gCol[1][0]}</div>
-                            <div class="grid-item item-{card.oCol[1][1]}">{card.oCol[1][0]}</div>
-                            <div class="grid-item item-{card.bCol[2][1]}">{card.bCol[2][0]}</div>
-                            <div class="grid-item item-{card.iCol[2][1]}">{card.iCol[2][0]}</div>
-                            <div class="grid-item item-{card.nCol[2][1]}">FREE</div>
-                            <div class="grid-item item-{card.gCol[2][1]}">{card.gCol[2][0]}</div>
-                            <div class="grid-item item-{card.oCol[2][1]}">{card.oCol[2][0]}</div>
-                            <div class="grid-item item-{card.bCol[3][1]}">{card.bCol[3][0]}</div>
-                            <div class="grid-item item-{card.iCol[3][1]}">{card.iCol[3][0]}</div>
-                            <div class="grid-item item-{card.nCol[3][1]}">{card.nCol[3][0]}</div>
-                            <div class="grid-item item-{card.gCol[3][1]}">{card.gCol[3][0]}</div>
-                            <div class="grid-item item-{card.oCol[3][1]}">{card.oCol[3][0]}</div>
-                            <div class="grid-item item-{card.bCol[4][1]}">{card.bCol[4][0]}</div>
-                            <div class="grid-item item-{card.iCol[4][1]}">{card.iCol[4][0]}</div>
-                            <div class="grid-item item-{card.nCol[4][1]}">{card.nCol[4][0]}</div>
-                            <div class="grid-item item-{card.gCol[4][1]}">{card.gCol[4][0]}</div>
-                            <div class="grid-item item-{card.oCol[4][1]}">{card.oCol[4][0]}</div>"""
+                cardHtml += f"""<div class="grid-item-{card.bCol[0][1]} item-{card.bCol[0][1]}">{card.bCol[0][0]}</div>
+                            <div class="grid-item-{card.iCol[0][1]} item-{card.iCol[0][1]}">{card.iCol[0][0]}</div>
+                            <div class="grid-item-{card.nCol[0][1]} item-{card.nCol[0][1]}">{card.nCol[0][0]}</div>
+                            <div class="grid-item-{card.gCol[0][1]} item-{card.gCol[0][1]}">{card.gCol[0][0]}</div>
+                            <div class="grid-item-{card.oCol[0][1]} item-{card.oCol[0][1]}">{card.oCol[0][0]}</div>
+                            <div class="grid-item-{card.bCol[1][1]} item-{card.bCol[1][1]}">{card.bCol[1][0]}</div>
+                            <div class="grid-item-{card.iCol[1][1]} item-{card.iCol[1][1]}">{card.iCol[1][0]}</div>
+                            <div class="grid-item-{card.nCol[1][1]} item-{card.nCol[1][1]}">{card.nCol[1][0]}</div>
+                            <div class="grid-item-{card.gCol[1][1]} item-{card.gCol[1][1]}">{card.gCol[1][0]}</div>
+                            <div class="grid-item-{card.oCol[1][1]} item-{card.oCol[1][1]}">{card.oCol[1][0]}</div>
+                            <div class="grid-item-{card.bCol[2][1]} item-{card.bCol[2][1]}">{card.bCol[2][0]}</div>
+                            <div class="grid-item-{card.iCol[2][1]} item-{card.iCol[2][1]}">{card.iCol[2][0]}</div>
+                            <div class="grid-item-{card.nCol[2][1]} item-{card.nCol[2][1]}">FREE</div>
+                            <div class="grid-item-{card.gCol[2][1]} item-{card.gCol[2][1]}">{card.gCol[2][0]}</div>
+                            <div class="grid-item-{card.oCol[2][1]} item-{card.oCol[2][1]}">{card.oCol[2][0]}</div>
+                            <div class="grid-item-{card.bCol[3][1]} item-{card.bCol[3][1]}">{card.bCol[3][0]}</div>
+                            <div class="grid-item-{card.iCol[3][1]} item-{card.iCol[3][1]}">{card.iCol[3][0]}</div>
+                            <div class="grid-item-{card.nCol[3][1]} item-{card.nCol[3][1]}">{card.nCol[3][0]}</div>
+                            <div class="grid-item-{card.gCol[3][1]} item-{card.gCol[3][1]}">{card.gCol[3][0]}</div>
+                            <div class="grid-item-{card.oCol[3][1]} item-{card.oCol[3][1]}">{card.oCol[3][0]}</div>
+                            <div class="grid-item-{card.bCol[4][1]} item-{card.bCol[4][1]}">{card.bCol[4][0]}</div>
+                            <div class="grid-item-{card.iCol[4][1]} item-{card.iCol[4][1]}">{card.iCol[4][0]}</div>
+                            <div class="grid-item-{card.nCol[4][1]} item-{card.nCol[4][1]}">{card.nCol[4][0]}</div>
+                            <div class="grid-item-{card.gCol[4][1]} item-{card.gCol[4][1]}">{card.gCol[4][0]}</div>
+                            <div class="grid-item-{card.oCol[4][1]} item-{card.oCol[4][1]}">{card.oCol[4][0]}</div>"""
                 cardHtml += "</div></form>"
                 i += 1
 
