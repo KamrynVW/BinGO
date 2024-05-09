@@ -647,35 +647,150 @@ class binGoHandler(BaseHTTPRequestHandler):
             cardNum = int(form.getvalue("card-num"))
             card = db.writeCard(cardNum)
             
-            html = f""" <html lang="en">
+            html = f""" <!DOCTYPE html>
+                        <html lang="en">
                         <head>
                             <meta charset="UTF-8">
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                             <title>BinGO - Enter New Card</title>
-                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                             <style>
-                                .grid {{
-                                    display: grid;
-                                    grid-template-columns: repeat(5, 100px);
-                                    grid-template-rows: repeat(6, 100px);
-                                    gap: 1px;
+                                @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+                                body {{
                                     justify-content: center;
                                     align-items: center;
+                                    min-height: 100vh;
+                                    background: #27282c;
+                                    font-family: 'Poppins', sans-serif;
+                                    overflow: hidden;
                                 }}
 
-                                .grid-item {{
-                                    width: 100px;
-                                    height: 100px;
-                                    border: 1px black;
+                                .container {{
                                     display: flex;
                                     justify-content: center;
                                     align-items: center;
+                                    height: 100%;
                                 }}
 
-                                .input-box {{
+                                .grid-container {{
+                                    display: grid;
+                                    grid-template-columns: repeat(5, 80px);
+                                    grid-template-rows: repeat(6, 80px);
+                                    gap: 5px;
+                                    border: 3px solid white;
+                                    padding: 5px;
+                                }}
+
+                                .grid-item {{
+                                    background-color: slategray;
+                                    border: 3px solid white;
+                                    color: black;
+                                    font-size: 30px;
+                                    justify-content: center;
+                                    align-items: center;
+                                    overflow: hidden;
+                                    display: flex;
+                                }}
+
+                                a {{
+                                    position: relative;
+                                    background: white;
+                                    color: white;
+                                    text-decoration: none;
+                                    text-transform: uppercase;
+                                    font-size: 1.5em;
+                                    letter-spacing: 0.1em;
+                                    font-weight: 400;
+                                    padding: 5px 30px;
+                                    transition: 0.5s;
+                                }}
+
+                                a:hover {{
+                                    letter-spacing: 0.25em;
+                                    background: var(--clr);
+                                    color: var(--clr);
+                                    box-shadow: 0 0 35px var(--clr);
+                                }}
+
+                                a:before {{
+                                    content: '';
+                                    position: absolute;
+                                    inset: 2px;
+                                    background: #27282c;
+                                }}
+
+                                a span {{
+                                    position: relative;
+                                    z-index: 1;
+                                }}
+
+                                input {{
+                                    width: 100%;
+                                    height: 100%;
+                                    background: slategrey;
+                                    color: white;
                                     font-size: 50px;
+                                    font-weight: bold;
+                                    text-align: center;
+                                    text-shadow: 2px 2px 4px black;
+                                }}
+
+                                .id-input {{
+                                    background: #27282c;
+                                    color: white;
+                                    width: 100px;
+                                    height: 30px;
+                                    font-size: 30px;
+                                    font-weight: bold;
+                                    text-align: center;
+                                    text-shadow: 2px 2px 4px black;
+                                }}
+
+                                p {{
+                                    color: white;
+                                    font-size: 50px;
+                                    font-weight: bold;
+                                    text-align: center;
+                                    text-shadow: 2px 2px 4px black;
+                                }}
+
+                                .free-space {{
+                                    font-size: 22px;
+                                }}
+
+                                input[type=number]::-webkit-inner-spin-button, 
+                                input[type=number]::-webkit-outer-spin-button {{
+                                    -webkit-appearance: none; 
+                                    margin: 0; 
+                                }}
+
+                                select {{
+                                    color: white;
+                                    background: #27282c;
+                                    text-shadow: 2px 2px 4px black;
+                                    font-size: 30px;
+                                    justify-content: center;
+                                    align-items: center;
                                     text-align: center;
                                 }}
+
+                                .button-holder {{
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    width: 100%;
+                                }}
+
+                                .button-holder.space-around {{
+                                    justify-content: space-around;
+                                }}
+
+                                label {{
+                                    color: whitesmoke;
+                                    text-shadow: 2px 2px 4px black;
+                                    text-align: center;
+                                    font-size: 30px;
+                                }}
+
                             </style>
                             <script>
                                 function changeCard() {{
@@ -687,60 +802,80 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 }}
                             </script>
                         </head>
-                        <body style="background-color: rgb(4, 22, 108);">
-                            <center>
-                                <form id="change-form" action="binGO_change_card" method="post">
-                                    <input type="hidden" id="card-num" name="card-num" value="{cardNum}"/>
-                                    <div class="card-extras">
+                        <body>
+                            <form id="change-form" action="binGO_change_card" method="post">
+                                <input type="hidden" id="card-num" name="card-num" value="{cardNum}"/>
+                                <div class="button-holder space-around">
+                                    <div>
+                                        <label for="colour">Colour: </label>
                                         <select id="colour" name="colour">
-                                            <option value="pink">Pink</option>
+                                            <option value="pink" selected>Pink</option>
                                             <option value="green">Green</option>
                                             <option value="yellow">Yellow</option>
                                             <option value="blue">Blue</option>
                                             <option value="orange">Orange</option> 
                                         </select>
-                                        <input value="{card.middleId}"id="id1" name="id1" type="number" required/>
-                                        <input value="{card.backId}" id="id2" name="id2" type="number" required/>
                                     </div>
-                                    <div class="grid">
-                                        <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">B</div>
-                                        <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">I</div>
-                                        <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">N</div>
-                                        <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">G</div>
-                                        <div class="grid-item" style="font-size: 50px; text-align: center; background-color: aqua;">O</div>
-                                        <input value="{card.bCol[0][0]}" id="B1" name="B1" type="number" class=" input-box" min="1" max="15"/>
-                                        <input value="{card.iCol[0][0]}" id="I1" name="I1" type="number" class=" input-box" min="16" max="30"/>
-                                        <input value="{card.nCol[0][0]}" id="N1" name="N1" type="number" class=" input-box" min="31" max="45"/>
-                                        <input value="{card.gCol[0][0]}" id="G1" name="G1" type="number" class=" input-box" min="46" max="60"/>
-                                        <input value="{card.oCol[0][0]}" id="O1" name="O1" type="number" class=" input-box" min="61" max="75"/>
-                                        <input value="{card.bCol[1][0]}" id="B2" name="B2" type="number" class=" input-box" min="1" max="15"/>
-                                        <input value="{card.iCol[1][0]}" id="I2" name="I2" type="number" class=" input-box" min="16" max="30"/>
-                                        <input value="{card.nCol[1][0]}" id="N2" name="N2" type="number" class=" input-box" min="31" max="45"/>
-                                        <input value="{card.gCol[1][0]}" id="G2" name="G2" type="number" class=" input-box" min="46" max="60"/>
-                                        <input value="{card.oCol[1][0]}" id="O2" name="O2" type="number" class=" input-box" min="61" max="75"/>
-                                        <input value="{card.bCol[2][0]}" id="B3" name="B3" type="number" class=" input-box" min="1" max="15"/>
-                                        <input value="{card.iCol[2][0]}" id="I3" name="I3" type="number" class=" input-box" min="16" max="30"/>
-                                        <div class="grid-item" style="background-color: white;">Free Space</div>
-                                        <input value="{card.gCol[2][0]}" id="G3" name="G3" type="number" class=" input-box" min="46" max="60"/>
-                                        <input value="{card.oCol[2][0]}" id="O3" name="O3" type="number" class=" input-box" min="61" max="75"/>
-                                        <input value="{card.bCol[3][0]}" id="B4" name="B4" type="number" class=" input-box" min="1" max="15"/>
-                                        <input value="{card.iCol[3][0]}" id="I4" name="I4" type="number" class=" input-box" min="16" max="30"/>
-                                        <input value="{card.nCol[3][0]}" id="N4" name="N4" type="number" class=" input-box" min="31" max="45"/>
-                                        <input value="{card.gCol[3][0]}" id="G4" name="G4" type="number" class=" input-box" min="46" max="60"/>
-                                        <input value="{card.oCol[3][0]}" id="O4" name="O4" type="number" class=" input-box" min="61" max="75"/>
-                                        <input value="{card.bCol[4][0]}" id="B5" name="B5" type="number" class=" input-box" min="1" max="15"/>
-                                        <input value="{card.iCol[4][0]}" id="I5" name="I5" type="number" class=" input-box" min="16" max="30"/>
-                                        <input value="{card.nCol[4][0]}" id="N5" name="N5" type="number" class=" input-box" min="31" max="45"/>
-                                        <input value="{card.gCol[4][0]}" id="G5" name="G5" type="number" class=" input-box" min="46" max="60"/>
-                                        <input value="{card.oCol[4][0]}" id="O5" name="O5" type="number" class=" input-box" min="61" max="75"/>
+                                    <div>
+                                        <label for="id1">Middle ID: </label>
+                                        <input value="{card.middleId}" class="id-input" id="id1" name="id1" type="number" required/>
                                     </div>
-                                </form>
-                                <form id="delete-form" action="binGO_delete_card" method="post">
-                                    <input type="hidden" id="d-card-num" name="d-card-num" value="{cardNum}"/>
-                                </form>
-                                <button onclick="changeCard()">Change</button>
-                                <button onclick="deleteCard()">Delete</button>
-                             </center>
+                                    <div>
+                                        <label for="id2">Back ID: </label>
+                                        <input value="{card.backId}" class="id-input" id="id2" name="id2" type="number" required/>
+                                    </div>
+                                </div>
+
+                                <br>
+                                <hr>
+                                <br>
+
+                                <div class="container">
+                                    <div class="grid-container">
+                                        <div class="grid-item"><p>B</p></div>
+                                        <div class="grid-item"><p>I</p></div>
+                                        <div class="grid-item"><p>N</p></div>
+                                        <div class="grid-item"><p>G</p></div>
+                                        <div class="grid-item"><p>O</p></div>
+                                        <div class="grid-item"><input value="{card.bCol[0][0]}" id="B1" name="B1" type="number" class=" input-box" min="1" max="15"/></div>
+                                        <div class="grid-item"><input value="{card.iCol[0][0]}" id="I1" name="I1" type="number" class=" input-box" min="16" max="30"/></div>
+                                        <div class="grid-item"><input value="{card.nCol[0][0]}" id="N1" name="N1" type="number" class=" input-box" min="31" max="45"/></div>
+                                        <div class="grid-item"><input value="{card.gCol[0][0]}" id="G1" name="G1" type="number" class=" input-box" min="46" max="60"/></div>
+                                        <div class="grid-item"><input value="{card.oCol[0][0]}" id="O1" name="O1" type="number" class=" input-box" min="61" max="75"/></div>
+                                        <div class="grid-item"><input value="{card.bCol[1][0]}" id="B2" name="B2" type="number" class=" input-box" min="1" max="15"/></div>
+                                        <div class="grid-item"><input value="{card.iCol[1][0]}" id="I2" name="I2" type="number" class=" input-box" min="16" max="30"/></div>
+                                        <div class="grid-item"><input value="{card.nCol[1][0]}" id="N2" name="N2" type="number" class=" input-box" min="31" max="45"/></div>
+                                        <div class="grid-item"><input value="{card.gCol[1][0]}" id="G2" name="G2" type="number" class=" input-box" min="46" max="60"/></div>
+                                        <div class="grid-item"><input value="{card.oCol[1][0]}" id="O2" name="O2" type="number" class=" input-box" min="61" max="75"/></div>
+                                        <div class="grid-item"><input value="{card.bCol[2][0]}" id="B3" name="B3" type="number" class=" input-box" min="1" max="15"/></div>
+                                        <div class="grid-item"><input value="{card.iCol[2][0]}" id="I3" name="I3" type="number" class=" input-box" min="16" max="30"/></div>
+                                        <div class="grid-item"><p class="free-space">FREE<br>SPACE</p></div>
+                                        <div class="grid-item"><input value="{card.gCol[2][0]}" id="G3" name="G3" type="number" class=" input-box" min="46" max="60"/></div>
+                                        <div class="grid-item"><input value="{card.oCol[2][0]}" id="O3" name="O3" type="number" class=" input-box" min="61" max="75"/></div>
+                                        <div class="grid-item"><input value="{card.bCol[3][0]}" id="B4" name="B4" type="number" class=" input-box" min="1" max="15"/></div>
+                                        <div class="grid-item"><input value="{card.iCol[3][0]}" id="I4" name="I4" type="number" class=" input-box" min="16" max="30"/></div>
+                                        <div class="grid-item"><input value="{card.nCol[3][0]}" id="N4" name="N4" type="number" class=" input-box" min="31" max="45"/></div>
+                                        <div class="grid-item"><input value="{card.gCol[3][0]}" id="G4" name="G4" type="number" class=" input-box" min="46" max="60"/></div>
+                                        <div class="grid-item"><input value="{card.oCol[3][0]}" id="O4" name="O4" type="number" class=" input-box" min="61" max="75"/></div>
+                                        <div class="grid-item"><input value="{card.bCol[4][0]}" id="B5" name="B5" type="number" class=" input-box" min="1" max="15"/></div>
+                                        <div class="grid-item"><input value="{card.iCol[4][0]}" id="I5" name="I5" type="number" class=" input-box" min="16" max="30"/></div>
+                                        <div class="grid-item"><input value="{card.nCol[4][0]}" id="N5" name="N5" type="number" class=" input-box" min="31" max="45"/></div>
+                                        <div class="grid-item"><input value="{card.gCol[4][0]}" id="G5" name="G5" type="number" class=" input-box" min="46" max="60"/></div>
+                                        <div class="grid-item"><input value="{card.oCol[4][0]}" id="O5" name="O5" type="number" class=" input-box" min="61" max="75"/></div>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <form id="delete-form" action="binGO_delete_card" method="post">
+                                <input type="hidden" id="d-card-num" name="d-card-num" value="{cardNum}"/>
+                            </form>
+                            
+                            <br>
+
+                            <div style="justify-content: center; align-items: center; display: flex;">
+                                <a style="--clr:steelblue" onclick="changeCard()"><span>Change</span></a>
+                                <a style="--clr:steelblue" onclick="deleteCard()"><span>Delete</span></a>
+                            </div>
                         </body>
                         </html>"""
             
@@ -913,14 +1048,14 @@ class binGoHandler(BaseHTTPRequestHandler):
                     <input id="N5" name="N5" type="hidden" value="{win.col[2][4]}"/>
                     <input id="G5" name="G5" type="hidden" value="{win.col[3][4]}"/>
                     <input id="O5" name="O5" type="hidden" value="{win.col[4][4]}"/>
-                    <center>
+                    <div style="justify-content: center; align-items: center; display: flex;">
                         <label for="name">Name of Win:</label>
-                        <input value="{win.name}" id="name" name="name" type="text"/>
-                        <br>
-                        <br>
-                        <hr>
-                        <br>
-                    </center>
+                        <input class="name-of-win" value="{win.name}" id="name" name="name" type="text"/>
+                    </div>
+
+                    <br>
+                    <hr>
+                    <br>
 
                     <div class="container">
                         <div class="grid-container">
@@ -955,6 +1090,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                 <form id="delete-form" action="binGO_delete_win" method="post">
                     <input type="hidden" value="{winId}" name="win-id" id="win-id"/>
                 </form>
+
+                <br>
 
                 <div class="button-holder">
                     <a style="--clr:steelblue" onclick="changeWin()"><span>Change</span></a>

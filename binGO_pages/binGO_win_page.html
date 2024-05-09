@@ -80,7 +80,6 @@
             background-color: #27282c;
             color: whitesmoke;
         }
-
     </style>
     <title>BinGO - Enter New Win</title>
 </head>
@@ -111,14 +110,14 @@
         <input id="N5" name="N5" type="hidden" value="0"/>
         <input id="G5" name="G5" type="hidden" value="0"/>
         <input id="O5" name="O5" type="hidden" value="0"/>
-        <center>
+        <div style="justify-content: center; align-items: center; display: flex;">
             <label for="name">Name of Win: </label>
             <input class="name-of-win" id="name" name="name" type="text"/>
-            <br>
-            <br>
-            <hr>
-            <br>
-        </center>
+        </div>
+
+        <br>
+        <hr>
+        <br>
 
         <div class="container">
             <div class="grid-container">
@@ -151,9 +150,9 @@
         </div>
         
         <br>
-        <center>
+        <div style="justify-content: center; align-items: center; display: flex;">
             <a style="--clr:steelblue" onclick="submitForm()"><span>Submit</span></a>
-        </center>
+        </div>
     </form>
     
 
