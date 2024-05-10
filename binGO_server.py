@@ -177,7 +177,7 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                 
                                 .win-post {
                                     width: 100%;
-                                    background: #27282c;
+                                    background: slategrey;
                                     justify-content: center;
                                     align-items: center;
                                     display: flex;
@@ -432,9 +432,9 @@ PAGE_AJAX = f""" <script>
                                                         var winPost = document.getElementById('win-post');
 
                                                         if (winPost) {{
-                                                            winPost.innerHTML = "<div style='width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><br><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + "</div><hr>"
+                                                            winPost.innerHTML = "<div style='background: slategrey; width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + "</div><hr>"
                                                         }} else {{
-                                                            document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<div id='win-post'><div style='width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><br><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + "</div><hr></div>");
+                                                            document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<div id='win-post'><div style='background: slategrey; width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + "</div><hr></div>");
                                                         }}
                                                     }}
                                                 }});
@@ -629,8 +629,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     </div>
 
                                     <br>
-                                    <hr id="hr-tag">
                                     </div>
+                                    <hr id="hr-tag">
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -722,8 +722,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     </div>
 
                                     <br>
-                                    <hr id="hr-tag">
                                     </div>
+                                    <hr id="hr-tag">
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -815,8 +815,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     </div>
 
                                     <br>
-                                    <hr id="hr-tag">
                                     </div>
+                                    <hr id="hr-tag">
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -908,8 +908,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     </div>
 
                                     <br>
-                                    <hr id="hr-tag">
                                     </div>
+                                    <hr id="hr-tag">
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -1001,8 +1001,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     </div>
 
                                     <br>
-                                    <hr id="hr-tag">
                                     </div>
+                                    <hr id="hr-tag">
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
