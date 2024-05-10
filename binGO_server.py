@@ -1,6 +1,7 @@
 import binGO_classes
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import cgi
+import os
 
 PAGE_HEADER_P1 = """<!DOCTYPE html>
                     <html lang="en">
@@ -473,6 +474,7 @@ class binGoServer(HTTPServer):
         self.winCondition = binGO_classes.WinCondition("winner", [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1])
         self.winnerCard = None
         self.numbersCalled = []
+        self.filePath = os.path.dirname(os.path.abspath(__file__))
         super().__init__(address, handler)
 
 class binGoHandler(BaseHTTPRequestHandler):
@@ -484,7 +486,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open('../binGO_pages/binGO_start_page.html', 'rb') as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_start_page.html')
+            with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_card_page.html']:
@@ -492,7 +495,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open('../binGO_pages/binGO_card_page.html', 'rb') as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_card_page.html')
+            with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_win_page.html']:
@@ -500,7 +504,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open('../binGO_pages/binGO_win_page.html', 'rb') as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_win_page.html')
+            with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_get_win_bit']:
@@ -1072,7 +1077,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open('../binGO_pages/binGO_card_page.html', 'rb') as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_card_page.html')
+            with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_win_page.html']:
@@ -1080,7 +1086,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open('../binGO_pages/binGO_win_page.html', 'rb') as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_win_page.html')
+            with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_submit_card.html']:
@@ -1098,7 +1105,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open("../binGO_pages/binGO_start_page.html", "rb") as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_start_page.html')
+            with open(file_path, "rb") as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_submit_win.html']:
@@ -1117,7 +1125,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open("../binGO_pages/binGO_start_page.html", "rb") as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_start_page.html')
+            with open(file_path, "rb") as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_end_game.html']:
@@ -1128,7 +1137,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open("../binGO_pages/binGO_start_page.html", "rb") as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_start_page.html')
+            with open(file_path, "rb") as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_change_win']:
@@ -1408,7 +1418,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open('../binGO_pages/binGO_start_page.html', 'rb') as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_start_page.html')
+            with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_delete_card']:
@@ -1420,7 +1431,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open('../binGO_pages/binGO_start_page.html', 'rb') as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_start_page.html')
+            with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_edit_delete_win.html']:
@@ -1651,7 +1663,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open('../binGO_pages/binGO_start_page.html', 'rb') as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_start_page.html')
+            with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
         elif self.path in ['/binGO_delete_win']:
@@ -1665,7 +1678,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
-            with open('../binGO_pages/binGO_start_page.html', 'rb') as f:
+            file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_start_page.html')
+            with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
 if __name__ == "__main__":
