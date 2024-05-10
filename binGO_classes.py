@@ -206,11 +206,11 @@ class Database():
         self.conn.commit()
         cur.close()
 
-    def changeCard(self, id, middleID, backID, bCol, iCol, nCol, gCol, oCol):
+    def changeCard(self, id, middleID, backID, bCol, iCol, nCol, gCol, oCol, colour):
         cur = self.conn.cursor()
 
-        cur.execute("UPDATE Cards SET MIDDLEID = ?, BACKID = ?, COLUMNB = ?, COLUMNI = ?, COLUMNN = ?, COLUMNG = ?, COLUMNO = ? WHERE CARDID = ?",
-                    (middleID, backID, bCol, iCol, nCol, gCol, oCol, id))
+        cur.execute("UPDATE Cards SET COLOUR = ?, MIDDLEID = ?, BACKID = ?, COLUMNB = ?, COLUMNI = ?, COLUMNN = ?, COLUMNG = ?, COLUMNO = ? WHERE CARDID = ?",
+                    (colour, middleID, backID, bCol, iCol, nCol, gCol, oCol, id))
         
         self.conn.commit()
         cur.close()
