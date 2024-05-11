@@ -2,6 +2,7 @@ import binGO_classes
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import cgi
 import os
+import random
 
 PAGE_HEADER_P1 = """<!DOCTYPE html>
                     <html lang="en">
@@ -718,7 +719,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                                     <div class="input-holder">
                                         <label for="num-input">Call Number:</label>
-                                        <input class="input-field" id="num-input" type="text" value="0"/>
+                                        <input class="input-field" id="num-input" type="number" value="0"/>
                                     </div>
 
                                     <br>
@@ -811,7 +812,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                                     <div class="input-holder">
                                         <label for="num-input">Call Number:</label>
-                                        <input class="input-field" id="num-input" type="text" value="0"/>
+                                        <input class="input-field" id="num-input" type="number" value="0"/>
                                     </div>
 
                                     <br>
@@ -904,7 +905,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                                     <div class="input-holder">
                                         <label for="num-input">Call Number:</label>
-                                        <input class="input-field" id="num-input" type="text" value="0"/>
+                                        <input class="input-field" id="num-input" type="number" value="0"/>
                                     </div>
 
                                     <br>
@@ -997,7 +998,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                                     <div class="input-holder">
                                         <label for="num-input">Call Number:</label>
-                                        <input class="input-field" id="num-input" type="text" value="0"/>
+                                        <input class="input-field" id="num-input" type="number" value="0"/>
                                     </div>
 
                                     <br>
@@ -1312,8 +1313,75 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                             </style>
                             <script>
+                                function checkSubmit() {{
+                                    if (document.getElementById("B1").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("I1").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("N1").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("G1").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("O1").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("B2").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("I2").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("N2").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("G2").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("O2").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("B3").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("I3").value.trim() === "") {{
+                                        return 0; 
+                                    }} else if (document.getElementById("G3").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("O3").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("B4").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("I4").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("N4").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("G4").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("O4").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("B5").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("I5").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("N5").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("G5").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("O5").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("id1").value.trim() === "") {{
+                                        return 0;
+                                    }} else if (document.getElementById("id2").value.trim() === "") {{
+                                        return 0;
+                                    }} else {{
+                                        return 1;
+                                    }}
+                                }}
+
                                 function changeCard() {{
-                                    document.getElementById("change-form").submit();
+                                    if (checkSubmit()) {{
+                                        document.getElementById("change-form").submit();
+                                    }} else {{
+                                        if (document.getElementById("error-div")) {{
+                                            document.getElementById("error-div").remove();
+                                            document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
+                                        }} else {{
+                                            document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
+                                        }}
+                                    }}
                                 }}
 
                                 function deleteCard() {{
@@ -1337,17 +1405,16 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     </div>
                                     <div>
                                         <label for="id1">Middle ID: </label>
-                                        <input value="{card.middleId}" class="id-input" id="id1" name="id1" type="number" required/>
+                                        <input value="{card.middleId}" class="id-input" id="id1" name="id1" type="number" required />
                                     </div>
                                     <div>
                                         <label for="id2">Back ID: </label>
-                                        <input value="{card.backId}" class="id-input" id="id2" name="id2" type="number" required/>
+                                        <input value="{card.backId}" class="id-input" id="id2" name="id2" type="number" required />
                                     </div>
                                 </div>
 
                                 <br>
-                                <hr>
-                                <br>
+                                <hr id="error-post">
 
                                 <div class="container">
                                     <div class="grid-container">
@@ -1356,31 +1423,31 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <div class="grid-item"><p>N</p></div>
                                         <div class="grid-item"><p>G</p></div>
                                         <div class="grid-item"><p>O</p></div>
-                                        <div class="grid-item"><input value="{card.bCol[0][0]}" id="B1" name="B1" type="number" class=" input-box" min="1" max="15"/></div>
-                                        <div class="grid-item"><input value="{card.iCol[0][0]}" id="I1" name="I1" type="number" class=" input-box" min="16" max="30"/></div>
-                                        <div class="grid-item"><input value="{card.nCol[0][0]}" id="N1" name="N1" type="number" class=" input-box" min="31" max="45"/></div>
-                                        <div class="grid-item"><input value="{card.gCol[0][0]}" id="G1" name="G1" type="number" class=" input-box" min="46" max="60"/></div>
-                                        <div class="grid-item"><input value="{card.oCol[0][0]}" id="O1" name="O1" type="number" class=" input-box" min="61" max="75"/></div>
-                                        <div class="grid-item"><input value="{card.bCol[1][0]}" id="B2" name="B2" type="number" class=" input-box" min="1" max="15"/></div>
-                                        <div class="grid-item"><input value="{card.iCol[1][0]}" id="I2" name="I2" type="number" class=" input-box" min="16" max="30"/></div>
-                                        <div class="grid-item"><input value="{card.nCol[1][0]}" id="N2" name="N2" type="number" class=" input-box" min="31" max="45"/></div>
-                                        <div class="grid-item"><input value="{card.gCol[1][0]}" id="G2" name="G2" type="number" class=" input-box" min="46" max="60"/></div>
-                                        <div class="grid-item"><input value="{card.oCol[1][0]}" id="O2" name="O2" type="number" class=" input-box" min="61" max="75"/></div>
-                                        <div class="grid-item"><input value="{card.bCol[2][0]}" id="B3" name="B3" type="number" class=" input-box" min="1" max="15"/></div>
-                                        <div class="grid-item"><input value="{card.iCol[2][0]}" id="I3" name="I3" type="number" class=" input-box" min="16" max="30"/></div>
+                                        <div class="grid-item"><input value="{card.bCol[0][0]}" id="B1" name="B1" type="number" class=" input-box" min="1" max="15" required /></div>
+                                        <div class="grid-item"><input value="{card.iCol[0][0]}" id="I1" name="I1" type="number" class=" input-box" min="16" max="30" required /></div>
+                                        <div class="grid-item"><input value="{card.nCol[0][0]}" id="N1" name="N1" type="number" class=" input-box" min="31" max="45" required /></div>
+                                        <div class="grid-item"><input value="{card.gCol[0][0]}" id="G1" name="G1" type="number" class=" input-box" min="46" max="60" required /></div>
+                                        <div class="grid-item"><input value="{card.oCol[0][0]}" id="O1" name="O1" type="number" class=" input-box" min="61" max="75" required /></div>
+                                        <div class="grid-item"><input value="{card.bCol[1][0]}" id="B2" name="B2" type="number" class=" input-box" min="1" max="15" required /></div>
+                                        <div class="grid-item"><input value="{card.iCol[1][0]}" id="I2" name="I2" type="number" class=" input-box" min="16" max="30" required /></div>
+                                        <div class="grid-item"><input value="{card.nCol[1][0]}" id="N2" name="N2" type="number" class=" input-box" min="31" max="45" required /></div>
+                                        <div class="grid-item"><input value="{card.gCol[1][0]}" id="G2" name="G2" type="number" class=" input-box" min="46" max="60" required /></div>
+                                        <div class="grid-item"><input value="{card.oCol[1][0]}" id="O2" name="O2" type="number" class=" input-box" min="61" max="75" required /></div>
+                                        <div class="grid-item"><input value="{card.bCol[2][0]}" id="B3" name="B3" type="number" class=" input-box" min="1" max="15" required /></div>
+                                        <div class="grid-item"><input value="{card.iCol[2][0]}" id="I3" name="I3" type="number" class=" input-box" min="16" max="30" required /></div>
                                         <div class="grid-item"><p class="free-space">FREE<br>SPACE</p></div>
-                                        <div class="grid-item"><input value="{card.gCol[2][0]}" id="G3" name="G3" type="number" class=" input-box" min="46" max="60"/></div>
-                                        <div class="grid-item"><input value="{card.oCol[2][0]}" id="O3" name="O3" type="number" class=" input-box" min="61" max="75"/></div>
-                                        <div class="grid-item"><input value="{card.bCol[3][0]}" id="B4" name="B4" type="number" class=" input-box" min="1" max="15"/></div>
-                                        <div class="grid-item"><input value="{card.iCol[3][0]}" id="I4" name="I4" type="number" class=" input-box" min="16" max="30"/></div>
-                                        <div class="grid-item"><input value="{card.nCol[3][0]}" id="N4" name="N4" type="number" class=" input-box" min="31" max="45"/></div>
-                                        <div class="grid-item"><input value="{card.gCol[3][0]}" id="G4" name="G4" type="number" class=" input-box" min="46" max="60"/></div>
-                                        <div class="grid-item"><input value="{card.oCol[3][0]}" id="O4" name="O4" type="number" class=" input-box" min="61" max="75"/></div>
-                                        <div class="grid-item"><input value="{card.bCol[4][0]}" id="B5" name="B5" type="number" class=" input-box" min="1" max="15"/></div>
-                                        <div class="grid-item"><input value="{card.iCol[4][0]}" id="I5" name="I5" type="number" class=" input-box" min="16" max="30"/></div>
-                                        <div class="grid-item"><input value="{card.nCol[4][0]}" id="N5" name="N5" type="number" class=" input-box" min="31" max="45"/></div>
-                                        <div class="grid-item"><input value="{card.gCol[4][0]}" id="G5" name="G5" type="number" class=" input-box" min="46" max="60"/></div>
-                                        <div class="grid-item"><input value="{card.oCol[4][0]}" id="O5" name="O5" type="number" class=" input-box" min="61" max="75"/></div>
+                                        <div class="grid-item"><input value="{card.gCol[2][0]}" id="G3" name="G3" type="number" class=" input-box" min="46" max="60" required /></div>
+                                        <div class="grid-item"><input value="{card.oCol[2][0]}" id="O3" name="O3" type="number" class=" input-box" min="61" max="75" required /></div>
+                                        <div class="grid-item"><input value="{card.bCol[3][0]}" id="B4" name="B4" type="number" class=" input-box" min="1" max="15" required /></div>
+                                        <div class="grid-item"><input value="{card.iCol[3][0]}" id="I4" name="I4" type="number" class=" input-box" min="16" max="30" required /></div>
+                                        <div class="grid-item"><input value="{card.nCol[3][0]}" id="N4" name="N4" type="number" class=" input-box" min="31" max="45" required /></div>
+                                        <div class="grid-item"><input value="{card.gCol[3][0]}" id="G4" name="G4" type="number" class=" input-box" min="46" max="60" required /></div>
+                                        <div class="grid-item"><input value="{card.oCol[3][0]}" id="O4" name="O4" type="number" class=" input-box" min="61" max="75" required /></div>
+                                        <div class="grid-item"><input value="{card.bCol[4][0]}" id="B5" name="B5" type="number" class=" input-box" min="1" max="15" required /></div>
+                                        <div class="grid-item"><input value="{card.iCol[4][0]}" id="I5" name="I5" type="number" class=" input-box" min="16" max="30" required /></div>
+                                        <div class="grid-item"><input value="{card.nCol[4][0]}" id="N5" name="N5" type="number" class=" input-box" min="31" max="45" required /></div>
+                                        <div class="grid-item"><input value="{card.gCol[4][0]}" id="G5" name="G5" type="number" class=" input-box" min="46" max="60" required /></div>
+                                        <div class="grid-item"><input value="{card.oCol[4][0]}" id="O5" name="O5" type="number" class=" input-box" min="61" max="75" required /></div>
                                     </div>
                                 </div>
                             </form>
@@ -1464,6 +1531,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                         justify-content: center;
                         align-items: center;
                         height: 100%;
+                        padding: 3px;
                     }}
 
                     .grid-container {{
@@ -1571,12 +1639,11 @@ class binGoHandler(BaseHTTPRequestHandler):
                     <input id="O5" name="O5" type="hidden" value="{win.col[4][4]}"/>
                     <div style="justify-content: center; align-items: center; display: flex;">
                         <label for="name">Name of Win:</label>
-                        <input class="name-of-win" value="{win.name}" id="name" name="name" type="text"/>
+                        <input class="name-of-win" value="{win.name}" id="name" name="name" type="text" required />
                     </div>
 
                     <br>
-                    <hr>
-                    <br>
+                    <hr id="error-post">
 
                     <div class="container">
                         <div class="grid-container">
@@ -1612,8 +1679,6 @@ class binGoHandler(BaseHTTPRequestHandler):
                     <input type="hidden" value="{winId}" name="win-id" id="win-id"/>
                 </form>
 
-                <br>
-
                 <div class="button-holder">
                     <a style="--clr:steelblue" onclick="changeWin()"><span>Change</span></a>
                     <a style="--clr:steelblue" onclick="deleteWin()"><span>Delete</span></a>
@@ -1632,8 +1697,25 @@ class binGoHandler(BaseHTTPRequestHandler):
                         }}
                     }}
 
+                    function checkSubmit() {{
+                        if (document.getElementById("name").value.trim() === "") {{
+                            return 0;
+                        }} else {{
+                            return 1;
+                        }}
+                    }}
+
                     function changeWin() {{
-                        document.getElementById("change-form").submit();
+                        if (checkSubmit()) {{
+                            document.getElementById("change-form").submit();
+                        }} else {{
+                            if (document.getElementById("error-div")) {{
+                                document.getElementById("error-div").remove();
+                                document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
+                            }} else {{
+                                document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
+                            }}
+                        }}
                     }}
 
                     function deleteWin() {{
@@ -1684,8 +1766,5 @@ class binGoHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     db = binGO_classes.Database()
-    """for i in range(0, 200):
-        card = binGO_classes.Card('blue', 57, 89, [1,1,1,1,1], [20,20,20,20,20], [40,40,40,40,40], [50,50,50,50,50], [70,70,70,70,70])
-        db.readCard(card)"""
     httpd = binGoServer(('localhost', 8000), binGoHandler)
     httpd.serve_forever()

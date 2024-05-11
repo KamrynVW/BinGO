@@ -144,8 +144,74 @@
 
     </style>
     <script>
+        function checkSubmit() {
+            if (document.getElementById("B1").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("I1").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("N1").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("G1").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("O1").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("B2").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("I2").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("N2").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("G2").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("O2").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("B3").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("I3").value.trim() === "") {
+                return 0; 
+            } else if (document.getElementById("G3").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("O3").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("B4").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("I4").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("N4").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("G4").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("O4").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("B5").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("I5").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("N5").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("G5").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("O5").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("id1").value.trim() === "") {
+                return 0;
+            } else if (document.getElementById("id2").value.trim() === "") {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
         function submitForm() {
-            document.getElementById("form").submit();
+            if (checkSubmit()) {
+                document.getElementById("form").submit();
+            } else {
+                if (document.getElementById("error-div")) {
+                    document.getElementById("error-div").remove();
+                    document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
+                } else {
+                    document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
+                }
+            }
         }
     </script>
 </head>
@@ -164,17 +230,16 @@
             </div>
             <div>
                 <label for="id1">Middle ID: </label>
-                <input class="id-input" id="id1" name="id1" type="number" required/>
+                <input class="id-input" id="id1" name="id1" type="number" required />
             </div>
             <div>
                 <label for="id2">Back ID: </label>
-                <input class="id-input" id="id2" name="id2" type="number" required/>
+                <input class="id-input" id="id2" name="id2" type="number" required />
             </div>
         </div>
 
         <br>
-        <hr>
-        <br>
+        <hr id="error-post">
 
         <div class="container">
             <div class="grid-container">
@@ -183,31 +248,31 @@
                 <div class="grid-item"><p>N</p></div>
                 <div class="grid-item"><p>G</p></div>
                 <div class="grid-item"><p>O</p></div>
-                <div class="grid-item"><input id="B1" name="B1" type="number" class=" input-box" min="1" max="15"/></div>
-                <div class="grid-item"><input id="I1" name="I1" type="number" class=" input-box" min="16" max="30"/></div>
-                <div class="grid-item"><input id="N1" name="N1" type="number" class=" input-box" min="31" max="45"/></div>
-                <div class="grid-item"><input id="G1" name="G1" type="number" class=" input-box" min="46" max="60"/></div>
-                <div class="grid-item"><input id="O1" name="O1" type="number" class=" input-box" min="61" max="75"/></div>
-                <div class="grid-item"><input id="B2" name="B2" type="number" class=" input-box" min="1" max="15"/></div>
-                <div class="grid-item"><input id="I2" name="I2" type="number" class=" input-box" min="16" max="30"/></div>
-                <div class="grid-item"><input id="N2" name="N2" type="number" class=" input-box" min="31" max="45"/></div>
-                <div class="grid-item"><input id="G2" name="G2" type="number" class=" input-box" min="46" max="60"/></div>
-                <div class="grid-item"><input id="O2" name="O2" type="number" class=" input-box" min="61" max="75"/></div>
-                <div class="grid-item"><input id="B3" name="B3" type="number" class=" input-box" min="1" max="15"/></div>
-                <div class="grid-item"><input id="I3" name="I3" type="number" class=" input-box" min="16" max="30"/></div>
+                <div class="grid-item"><input id="B1" name="B1" type="number" class=" input-box" min="1" max="15" required /></div>
+                <div class="grid-item"><input id="I1" name="I1" type="number" class=" input-box" min="16" max="30" required /></div>
+                <div class="grid-item"><input id="N1" name="N1" type="number" class=" input-box" min="31" max="45" required /></div>
+                <div class="grid-item"><input id="G1" name="G1" type="number" class=" input-box" min="46" max="60" required /></div>
+                <div class="grid-item"><input id="O1" name="O1" type="number" class=" input-box" min="61" max="75" required /></div>
+                <div class="grid-item"><input id="B2" name="B2" type="number" class=" input-box" min="1" max="15" required /></div>
+                <div class="grid-item"><input id="I2" name="I2" type="number" class=" input-box" min="16" max="30" required /></div>
+                <div class="grid-item"><input id="N2" name="N2" type="number" class=" input-box" min="31" max="45" required /></div>
+                <div class="grid-item"><input id="G2" name="G2" type="number" class=" input-box" min="46" max="60" required /></div>
+                <div class="grid-item"><input id="O2" name="O2" type="number" class=" input-box" min="61" max="75" required /></div>
+                <div class="grid-item"><input id="B3" name="B3" type="number" class=" input-box" min="1" max="15" required /></div>
+                <div class="grid-item"><input id="I3" name="I3" type="number" class=" input-box" min="16" max="30" required /></div>
                 <div class="grid-item"><p class="free-space">FREE<br>SPACE</p></div>
-                <div class="grid-item"><input id="G3" name="G3" type="number" class=" input-box" min="46" max="60"/></div>
-                <div class="grid-item"><input id="O3" name="O3" type="number" class=" input-box" min="61" max="75"/></div>
-                <div class="grid-item"><input id="B4" name="B4" type="number" class=" input-box" min="1" max="15"/></div>
-                <div class="grid-item"><input id="I4" name="I4" type="number" class=" input-box" min="16" max="30"/></div>
-                <div class="grid-item"><input id="N4" name="N4" type="number" class=" input-box" min="31" max="45"/></div>
-                <div class="grid-item"><input id="G4" name="G4" type="number" class=" input-box" min="46" max="60"/></div>
-                <div class="grid-item"><input id="O4" name="O4" type="number" class=" input-box" min="61" max="75"/></div>
-                <div class="grid-item"><input id="B5" name="B5" type="number" class=" input-box" min="1" max="15"/></div>
-                <div class="grid-item"><input id="I5" name="I5" type="number" class=" input-box" min="16" max="30"/></div>
-                <div class="grid-item"><input id="N5" name="N5" type="number" class=" input-box" min="31" max="45"/></div>
-                <div class="grid-item"><input id="G5" name="G5" type="number" class=" input-box" min="46" max="60"/></div>
-                <div class="grid-item"><input id="O5" name="O5" type="number" class=" input-box" min="61" max="75"/></div>
+                <div class="grid-item"><input id="G3" name="G3" type="number" class=" input-box" min="46" max="60" required /></div>
+                <div class="grid-item"><input id="O3" name="O3" type="number" class=" input-box" min="61" max="75" required /></div>
+                <div class="grid-item"><input id="B4" name="B4" type="number" class=" input-box" min="1" max="15" required /></div>
+                <div class="grid-item"><input id="I4" name="I4" type="number" class=" input-box" min="16" max="30" required /></div>
+                <div class="grid-item"><input id="N4" name="N4" type="number" class=" input-box" min="31" max="45" required /></div>
+                <div class="grid-item"><input id="G4" name="G4" type="number" class=" input-box" min="46" max="60" required /></div>
+                <div class="grid-item"><input id="O4" name="O4" type="number" class=" input-box" min="61" max="75" required /></div>
+                <div class="grid-item"><input id="B5" name="B5" type="number" class=" input-box" min="1" max="15" required /></div>
+                <div class="grid-item"><input id="I5" name="I5" type="number" class=" input-box" min="16" max="30" required /></div>
+                <div class="grid-item"><input id="N5" name="N5" type="number" class=" input-box" min="31" max="45" required /></div>
+                <div class="grid-item"><input id="G5" name="G5" type="number" class=" input-box" min="46" max="60" required /></div>
+                <div class="grid-item"><input id="O5" name="O5" type="number" class=" input-box" min="61" max="75" required /></div>
             </div>
         </div>
     </form>

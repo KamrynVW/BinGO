@@ -20,6 +20,7 @@
             justify-content: center;
             align-items: center;
             height: 100%;
+            padding: 3px;
         }
 
         .grid-container {
@@ -112,12 +113,11 @@
         <input id="O5" name="O5" type="hidden" value="0"/>
         <div style="justify-content: center; align-items: center; display: flex;">
             <label for="name">Name of Win: </label>
-            <input class="name-of-win" id="name" name="name" type="text"/>
+            <input class="name-of-win" id="name" name="name" type="text" required />
         </div>
 
         <br>
-        <hr>
-        <br>
+        <hr id="error-post">
 
         <div class="container">
             <div class="grid-container">
@@ -149,7 +149,6 @@
             </div>
         </div>
         
-        <br>
         <div style="justify-content: center; align-items: center; display: flex;">
             <a style="--clr:steelblue" onclick="submitForm()"><span>Submit</span></a>
         </div>
@@ -169,8 +168,25 @@
             }
         }
 
+        function checkSubmit() {
+            if (document.getElementById("name").value.trim() === "") {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
+
         function submitForm() {
-            document.getElementById("form").submit();
+            if (checkSubmit()) {
+                document.getElementById("form").submit();
+            } else {
+                if (document.getElementById("error-div")) {
+                    document.getElementById("error-div").remove();
+                    document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
+                } else {
+                    document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
+                }
+            }
         }
     </script>
 </body>

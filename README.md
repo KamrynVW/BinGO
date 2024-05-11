@@ -1,4 +1,6 @@
 # BinGO #
+Version: 1.0
+Launch Date: May 10th, 2024
 
 ## Description ##
 This program creates a Python server and database that allows you to store and play many bingo cards subsequentially.
@@ -15,7 +17,7 @@ This program makes for easy, large-scale playing of Bingo for people that may no
 - Fast.
 - Accessible.
 - Simplistic.
-- Small; only 124kb.
+- Small; only ~136kb.
 
 ## Prerequisites ##
 - Both Windows and MacOS are supported.
