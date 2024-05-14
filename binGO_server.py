@@ -594,14 +594,14 @@ class binGoHandler(BaseHTTPRequestHandler):
                                             </div>
                                         </form>"""
                     html +=        f""" <div class="dropdown">
-                                            <button class="dropbtn">Apply New Win</button>
+                                            <button class="dropbtn" disabled>Apply New Win</button>
                                             <div class="dropdown-content">
                                             {winNamesHTML}
                                             </div>
                                         </div>"""
                     html +=         f"""<form id="win-edit-delete-form" action="/binGO_edit_delete_win.html" method="post" style="display: inline">
                                             <div class="dropdown">
-                                                <button class="dropbtn">Edit/Delete Win</button>
+                                                <button class="dropbtn" disabled>Edit/Delete Win</button>
                                                 <div class="dropdown-content">
                                                 {winNamesCDHTML}
                                                 </div>
@@ -687,13 +687,13 @@ class binGoHandler(BaseHTTPRequestHandler):
                                             </div>
                                         </form>"""
                     html +=        f""" <div class="dropdown">
-                                            <button class="dropbtn">Apply New Win</button>
+                                            <button class="dropbtn" disabled>Apply New Win</button>
                                             <div class="dropdown-content">
                                             {winNamesHTML}
                                             </div>
                                         </div>"""
                     html +=         f"""<form id="win-edit-delete-form" action="/binGO_edit_delete_win.html" method="post" style="display: inline">
-                                            <div class="dropdown">
+                                            <div class="dropdown" disabled>
                                                 <button class="dropbtn">Edit/Delete Win</button>
                                                 <div class="dropdown-content">
                                                 {winNamesCDHTML}
@@ -780,14 +780,14 @@ class binGoHandler(BaseHTTPRequestHandler):
                                             </div>
                                         </form>"""
                     html +=        f""" <div class="dropdown">
-                                            <button class="dropbtn">Apply New Win</button>
+                                            <button class="dropbtn" disabled>Apply New Win</button>
                                             <div class="dropdown-content">
                                             {winNamesHTML}
                                             </div>
                                         </div>"""
                     html +=         f"""<form id="win-edit-delete-form" action="/binGO_edit_delete_win.html" method="post" style="display: inline">
                                             <div class="dropdown">
-                                                <button class="dropbtn">Edit/Delete Win</button>
+                                                <button class="dropbtn" disabled>Edit/Delete Win</button>
                                                 <div class="dropdown-content">
                                                 {winNamesCDHTML}
                                                 </div>
@@ -873,14 +873,14 @@ class binGoHandler(BaseHTTPRequestHandler):
                                             </div>
                                         </form>"""
                     html +=        f""" <div class="dropdown">
-                                            <button class="dropbtn">Apply New Win</button>
+                                            <button class="dropbtn" disabled>Apply New Win</button>
                                             <div class="dropdown-content">
                                             {winNamesHTML}
                                             </div>
                                         </div>"""
                     html +=         f"""<form id="win-edit-delete-form" action="/binGO_edit_delete_win.html" method="post" style="display: inline">
                                             <div class="dropdown">
-                                                <button class="dropbtn">Edit/Delete Win</button>
+                                                <button class="dropbtn" disabled>Edit/Delete Win</button>
                                                 <div class="dropdown-content">
                                                 {winNamesCDHTML}
                                                 </div>
@@ -966,14 +966,14 @@ class binGoHandler(BaseHTTPRequestHandler):
                                             </div>
                                         </form>"""
                     html +=        f""" <div class="dropdown">
-                                            <button class="dropbtn">Apply New Win</button>
+                                            <button class="dropbtn" disabled>Apply New Win</button>
                                             <div class="dropdown-content">
                                             {winNamesHTML}
                                             </div>
                                         </div>"""
                     html +=         f"""<form id="win-edit-delete-form" action="/binGO_edit_delete_win.html" method="post" style="display: inline">
                                             <div class="dropdown">
-                                                <button class="dropbtn">Edit/Delete Win</button>
+                                                <button class="dropbtn" disabled>Edit/Delete Win</button>
                                                 <div class="dropdown-content">
                                                 {winNamesCDHTML}
                                                 </div>
@@ -1133,6 +1133,7 @@ class binGoHandler(BaseHTTPRequestHandler):
         elif self.path in ['/binGO_end_game.html']:
             self.server.cards = []
             self.server.numbersCalled = []
+            self.server.winnerCard = None
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -1480,6 +1481,7 @@ class binGoHandler(BaseHTTPRequestHandler):
             oCol = f"{form.getvalue('O1')},{form.getvalue('O2')},{form.getvalue('O3')},{form.getvalue('O4')},{form.getvalue('O5')}"
 
             db.changeCard(int(form.getvalue("card-num")), int(form.getvalue("id1")), int(form.getvalue("id2")), bCol, iCol, nCol, gCol, oCol, form.getvalue('colour'))
+            self.server.winnerCard = None
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
