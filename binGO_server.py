@@ -1039,6 +1039,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                 cardHtml += f"""<form id="change-delete-{i}" action="binGO_edit_delete_card.html" method="post">
                                 <input type="hidden" id="card-num" name="card-num" value="{i}"/>
+                                <input type="hidden" id="card-col" name="card-col" value="{card.colour}"/>
                                 <div onclick="editOrDelete('{i}')" class="grid-container">"""
                 cardHtml += f"""<div class="grid-item-{card.bCol[0][1]} item-{card.bCol[0][1]}">{card.bCol[0][0]}</div>
                             <div class="grid-item-{card.iCol[0][1]} item-{card.iCol[0][1]}">{card.iCol[0][0]}</div>
@@ -1166,7 +1167,9 @@ class binGoHandler(BaseHTTPRequestHandler):
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
 
             cardNum = int(form.getvalue("card-num"))
-            card = db.writeCard(cardNum)
+            cardCol = form.getvalue("card-col")
+            cardIndex = db.getIdOfColour(cardNum, cardCol)
+            card = db.writeCard(cardIndex)
             
             html = f""" <!DOCTYPE html>
                         <html lang="en">
@@ -1392,7 +1395,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                         </head>
                         <body>
                             <form id="change-form" action="binGO_change_card" method="post">
-                                <input type="hidden" id="card-num" name="card-num" value="{cardNum}"/>
+                                <input type="hidden" id="card-num" name="card-num" value="{cardIndex}"/>
                                 <div class="button-holder space-around">
                                     <div>
                                         <label for="colour">Colour: </label>
@@ -1454,7 +1457,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                             </form>
 
                             <form id="delete-form" action="binGO_delete_card" method="post">
-                                <input type="hidden" id="d-card-num" name="d-card-num" value="{cardNum}"/>
+                                <input type="hidden" id="d-card-num" name="d-card-num" value="{cardIndex}"/>
                             </form>
                             
                             <br>

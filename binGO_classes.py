@@ -231,6 +231,16 @@ class Database():
         
         self.conn.commit()
         cur.close()
+
+    def getIdOfColour(self, cardNum, cardCol):
+        cur = self.conn.cursor()
+
+        cur.execute("SELECT CARDID FROM Cards WHERE COLOUR = ?", (cardCol,))
+        data = cur.fetchall()
+        indexes = [row[0] for row in data]
+
+        cur.close()
+        return indexes[cardNum - 1]
     
 class Card():
     def __init__(self, colour, id1, id2, col1, col2, col3, col4, col5):
