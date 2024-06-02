@@ -83,6 +83,7 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                     grid-template-columns: repeat(5, 50px);
                                     grid-template-rows: repeat(5, 50px);
                                     gap: 5px; /* Gap between grid items */
+                                    z-index: 1;
                                 }
 
                                 .parent-grid {
@@ -113,7 +114,9 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                     background: #27282c;
                                     min-width: 160px;
                                     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-                                    z-index: 1;
+                                    z-index: 2;
+                                    max-height: 300px;
+                                    overflow-y: auto;
                                 }
 
                                 .dropdown-content div {
@@ -143,8 +146,7 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
 
                                 .end-holder {
                                     display: flex;
-                                    justify-content: right;
-                                    align-items: right;
+                                    justify-content: space-between;
                                     width: 100%;
                                     padding: 10px;
                                 }
@@ -161,7 +163,7 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                 }
 
                                 .input-holder {
-                                    background: slategrey;
+                                    background: background: rgba(39, 40, 44, 0.5);
                                     justify-content: center;
                                     align-items: center;
                                     display: flex;
@@ -169,7 +171,7 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
 
                                 .input-field {
                                     width: 100px;
-                                    background: #27282c;
+                                    background: rgb(39, 40, 44);
                                     color: white;
                                     font-size: 35px;
                                     text-shadow: 2px 2px 4px black;
@@ -178,7 +180,7 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                 
                                 .win-post {
                                     width: 100%;
-                                    background: slategrey;
+                                    background: background: rgba(39, 40, 44, 0.5);
                                     justify-content: center;
                                     align-items: center;
                                     display: flex;
@@ -205,7 +207,7 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                     position: fixed;
                                     top: 0;
                                     width: 100%;
-                                    background: slategrey;
+                                    background: rgba(39, 40, 44, 0.5);
                                 }"""
 
 PAGE_HEADER_PINK = """  .item-1 {
@@ -396,6 +398,17 @@ PAGE_AJAX = f""" <script>
                     document.getElementById("end-game-form").submit();
                 }}
 
+                function toggleLock() {{
+                    $.ajax({{
+                        url: "/binGO_toggle_lock",
+                        type: 'GET',
+                        success: function(response) {{
+                            var span = document.getElementById("toggleText")
+                            document.getElementById("toggle-lock-form").submit();
+                        }}
+                    }})
+                }}
+
                 function editOrDeleteWin(name) {{
                     var inputName = document.createElement("input");
                     inputName.setAttribute("type", "hidden");
@@ -404,6 +417,16 @@ PAGE_AJAX = f""" <script>
                     inputName.setAttribute("value", name);
                     document.getElementById("win-edit-delete-form").appendChild(inputName);
                     document.getElementById("win-edit-delete-form").submit();
+                }}
+
+                function revokeCall() {{
+                    $.ajax({{
+                        url: "/binGO_revoke_call",
+                        type: 'POST',
+                        success: function() {{
+                            updateContent();
+                        }}
+                    }})
                 }}
 
                 function updateContent() {{
@@ -432,11 +455,19 @@ PAGE_AJAX = f""" <script>
                                                         var middleID = parseInt(response);
                                                         var winPost = document.getElementById('win-post');
 
-                                                        if (winPost) {{
-                                                            winPost.innerHTML = "<div style='background: slategrey; width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + "</div><hr>"
-                                                        }} else {{
-                                                            document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<div id='win-post'><div style='background: slategrey; width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + "</div><hr></div>");
-                                                        }}
+                                                        $.ajax({{
+                                                            url: "/binGO_get_win_call",
+                                                            type: 'GET',
+                                                            success: function(response) {{
+                                                                var winNumber = parseInt(response);
+
+                                                                if (winPost) {{
+                                                                    winPost.innerHTML = "<div style='background: rgba(39, 40, 44, 0.5); width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + ", Won On: " + winNumber + "</h2></div><hr>"
+                                                                }} else {{
+                                                                    document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<div id='win-post'><div style='background: rgba(39, 40, 44, 0.5); width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + ", Won On: " + winNumber + "</h2></div><hr></div>");
+                                                                }}
+                                                            }}
+                                                        }})
                                                     }}
                                                 }});
                                             }}
@@ -475,6 +506,8 @@ class binGoServer(HTTPServer):
         self.winCondition = binGO_classes.WinCondition("winner", [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1])
         self.winnerCard = None
         self.numbersCalled = []
+        self.locked = False
+        self.winningNumber = None
         self.filePath = os.path.dirname(os.path.abspath(__file__))
         super().__init__(address, handler)
 
@@ -539,6 +572,27 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(str(returnValue), "utf-8"))
 
+        elif self.path in ['/binGO_toggle_lock']:
+            if self.server.locked is False:
+                self.server.locked = True
+            else:
+                self.server.locked = False
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            self.wfile.write(bytes("NaN", "utf-8"))
+
+        elif self.path in ['/binGO_get_win_call']:
+            returnValue = self.server.winningNumber
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            self.wfile.write(bytes(str(returnValue), "utf-8"))
+
     def do_POST(self):
         if self.path in ['/binGO_play.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
@@ -546,6 +600,11 @@ class binGoHandler(BaseHTTPRequestHandler):
             colour = int(form.getvalue('colour'))
 
             html = PAGE_HEADER_P1
+
+            if self.server.locked is True:
+                lockStatus = "Unlock"
+            else:
+                lockStatus = "Lock"
 
             # 1 = Pink, 2 = Green, 3 = Yellow, 4 = Blue, 5 = Orange
             if colour == 1:
@@ -578,6 +637,9 @@ class binGoHandler(BaseHTTPRequestHandler):
                     winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
                     
                     html += """ <body>
+                                    <form id="toggle-lock-form" action="/binGO_play.html" method="post">
+                                        <input type="hidden" name="colour" id="colour" value="1"/>
+                                    </form>
                                     <br>
                                     <br>
                                     <br>
@@ -607,7 +669,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                                                 </div>
                                             </div>
                                         </form>"""
-                    html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                    html +=         f""" <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
@@ -619,6 +681,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     <br>
 
                                     <div class="end-holder">
+                                        <a style="--clr:red" onclick="toggleLock()"><span id="toggleText">{lockStatus}</span></a>
+                                        
                                         <form id="end-game-form" action="/binGO_end_game.html" method="post">
                                             <a style="--clr:red" onclick="endGame()"><span>End Game</span></a>
                                         </form>
@@ -628,10 +692,15 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <label for="num-input">Call Number:</label>
                                         <input class="input-field" id="num-input" type="number" value="0"/>
                                     </div>
-
                                     <br>
+                                    <div style="justify-content: center; align-items: center; display: flex;">
+                                        <button onclick="revokeCall()" style="padding: 2px; border: 1px solid white; background: #27282c; color: white; font-size: 15px;">Undo</button>
                                     </div>
+                                    <br>
                                     <hr id="hr-tag">
+                                    </div>
+                                    <br>
+                                    <br>
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -671,6 +740,9 @@ class binGoHandler(BaseHTTPRequestHandler):
                     winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
                     html += """ <body>
+                                    <form id="toggle-lock-form" action="/binGO_play.html" method="post">
+                                        <input type="hidden" name="colour" id="colour" value="2"/>
+                                    </form>
                                     <br>
                                     <br>
                                     <br>
@@ -700,7 +772,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                                                 </div>
                                             </div>
                                         </form>"""
-                    html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                    html +=         f""" <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
@@ -712,6 +784,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     <br>
 
                                     <div class="end-holder">
+                                        <a style="--clr:red" onclick="toggleLock()"><span id="toggleText">{lockStatus}</span></a>
                                         <form id="end-game-form" action="/binGO_end_game.html" method="post">
                                             <a style="--clr:red" onclick="endGame()"><span>End Game</span></a>
                                         </form>
@@ -721,10 +794,15 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <label for="num-input">Call Number:</label>
                                         <input class="input-field" id="num-input" type="number" value="0"/>
                                     </div>
-
+                                    <br>
+                                    <div style="justify-content: center; align-items: center; display: flex;">
+                                        <button onclick="revokeCall()" style="padding: 2px; border: 1px solid white; background: #27282c; color: white; font-size: 15px;">Undo</button>
+                                    </div>
                                     <br>
                                     </div>
                                     <hr id="hr-tag">
+                                    <br>
+                                    <br>
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -764,6 +842,9 @@ class binGoHandler(BaseHTTPRequestHandler):
                     winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
                     html += """ <body>
+                                    <form id="toggle-lock-form" action="/binGO_play.html" method="post">
+                                        <input type="hidden" name="colour" id="colour" value="3"/>
+                                    </form>
                                     <br>
                                     <br>
                                     <br>
@@ -793,7 +874,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                                                 </div>
                                             </div>
                                         </form>"""
-                    html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                    html +=         f""" <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
@@ -805,6 +886,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     <br>
 
                                     <div class="end-holder">
+                                        <a style="--clr:red" onclick="toggleLock()"><span id="toggleText">{lockStatus}</span></a>
                                         <form id="end-game-form" action="/binGO_end_game.html" method="post">
                                             <a style="--clr:red" onclick="endGame()"><span>End Game</span></a>
                                         </form>
@@ -814,10 +896,15 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <label for="num-input">Call Number:</label>
                                         <input class="input-field" id="num-input" type="number" value="0"/>
                                     </div>
-
+                                    <br>
+                                    <div style="justify-content: center; align-items: center; display: flex;">
+                                        <button onclick="revokeCall()" style="padding: 2px; border: 1px solid white; background: #27282c; color: white; font-size: 15px;">Undo</button>
+                                    </div>
                                     <br>
                                     </div>
                                     <hr id="hr-tag">
+                                    <br>
+                                    <br>
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -857,6 +944,9 @@ class binGoHandler(BaseHTTPRequestHandler):
                     winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
                     html += """ <body>
+                                    <form id="toggle-lock-form" action="/binGO_play.html" method="post">
+                                        <input type="hidden" name="colour" id="colour" value="4"/>
+                                    </form>
                                     <br>
                                     <br>
                                     <br>
@@ -886,7 +976,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                                                 </div>
                                             </div>
                                         </form>"""
-                    html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                    html +=         f""" <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
@@ -898,6 +988,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     <br>
 
                                     <div class="end-holder">
+                                        <a style="--clr:red" onclick="toggleLock()"><span id="toggleText">{lockStatus}</span></a>
                                         <form id="end-game-form" action="/binGO_end_game.html" method="post">
                                             <a style="--clr:red" onclick="endGame()"><span>End Game</span></a>
                                         </form>
@@ -907,10 +998,15 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <label for="num-input">Call Number:</label>
                                         <input class="input-field" id="num-input" type="number" value="0"/>
                                     </div>
-
+                                    <br>
+                                    <div style="justify-content: center; align-items: center; display: flex;">
+                                        <button onclick="revokeCall()" style="padding: 2px; border: 1px solid white; background: #27282c; color: white; font-size: 15px;">Undo</button>
+                                    </div>
                                     <br>
                                     </div>
                                     <hr id="hr-tag">
+                                    <br>
+                                    <br>
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -950,6 +1046,9 @@ class binGoHandler(BaseHTTPRequestHandler):
                     winNamesCDHTML = ''.join(f"""<div><h3 class="heading2" onclick="editOrDeleteWin('{name}')">{name}</h3></div>""" for name in winNames)
 
                     html += """ <body>
+                                    <form id="toggle-lock-form" action="/binGO_play.html" method="post">
+                                        <input type="hidden" name="colour" id="colour" value="5"/>
+                                    </form>
                                     <br>
                                     <br>
                                     <br>
@@ -979,7 +1078,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                                                 </div>
                                             </div>
                                         </form>"""
-                    html +=         """ <form action="/binGO_card_page.html" method="post" style="display: inline;">
+                    html +=         f""" <form action="/binGO_card_page.html" method="post" style="display: inline;">
                                             <div class="dropdown">
                                                 <button class="dropbtn" type="submit">Create New Card</button>
                                             </div>
@@ -991,6 +1090,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                                     <br>
 
                                     <div class="end-holder">
+                                        <a style="--clr:red" onclick="toggleLock()"><span id="toggleText">{lockStatus}</span></a>
                                         <form id="end-game-form" action="/binGO_end_game.html" method="post">
                                             <a style="--clr:red" onclick="endGame()"><span>End Game</span></a>
                                         </form>
@@ -1000,10 +1100,15 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <label for="num-input">Call Number:</label>
                                         <input class="input-field" id="num-input" type="number" value="0"/>
                                     </div>
-
+                                    <br>
+                                    <div style="justify-content: center; align-items: center; display: flex;">
+                                        <button onclick="revokeCall()" style="padding: 2px; border: 1px solid white; background: #27282c; color: white; font-size: 15px;">Undo</button>
+                                    </div>
                                     <br>
                                     </div>
                                     <hr id="hr-tag">
+                                    <br>
+                                    <br>
                                     <br>
 
                                     <div id="parent-grid" class="parent-grid"></div>"""
@@ -1027,7 +1132,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             else:
                 num = int(form.getvalue("value"))
 
-            self.server.numbersCalled.append(num)
+            if num != 0:
+                self.server.numbersCalled.append(num)
 
             cardHtml = ""
             i = 1
@@ -1036,11 +1142,17 @@ class binGoHandler(BaseHTTPRequestHandler):
 
                 if win == 1:
                     self.server.winnerCard = card
+                    self.server.winningNumber = num
 
                 cardHtml += f"""<form id="change-delete-{i}" action="binGO_edit_delete_card.html" method="post">
                                 <input type="hidden" id="card-num" name="card-num" value="{i}"/>
-                                <input type="hidden" id="card-col" name="card-col" value="{card.colour}"/>
-                                <div onclick="editOrDelete('{i}')" class="grid-container">"""
+                                <input type="hidden" id="card-col" name="card-col" value="{card.colour}"/>"""
+                
+                if self.server.locked is True:
+                    cardHtml += """<div class="grid-container">"""
+                else:
+                    cardHtml += f"""<div onclick="editOrDelete('{i}')" class="grid-container">"""
+                
                 cardHtml += f"""<div class="grid-item-{card.bCol[0][1]} item-{card.bCol[0][1]}">{card.bCol[0][0]}</div>
                             <div class="grid-item-{card.iCol[0][1]} item-{card.iCol[0][1]}">{card.iCol[0][0]}</div>
                             <div class="grid-item-{card.nCol[0][1]} item-{card.nCol[0][1]}">{card.nCol[0][0]}</div>
@@ -1465,6 +1577,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                             <div style="justify-content: center; align-items: center; display: flex;">
                                 <a style="--clr:steelblue" onclick="changeCard()"><span>Change</span></a>
                                 <a style="--clr:steelblue" onclick="deleteCard()"><span>Delete</span></a>
+                                <a style="--clr:red" href="binGO_start_page.html"><span>Main Menu</span></a>
                             </div>
                         </body>
                         </html>"""
@@ -1687,7 +1800,9 @@ class binGoHandler(BaseHTTPRequestHandler):
                 <div class="button-holder">
                     <a style="--clr:steelblue" onclick="changeWin()"><span>Change</span></a>
                     <a style="--clr:steelblue" onclick="deleteWin()"><span>Delete</span></a>
+                    <a style="--clr:red" href="binGO_start_page.html"><span>Main Menu</span></a>
                 </div>
+                
                 <script>
                     function flipTile(element, key) {{
                         var computedStyle = window.getComputedStyle(element);
@@ -1768,6 +1883,18 @@ class binGoHandler(BaseHTTPRequestHandler):
             file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_start_page.html')
             with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
+
+        elif self.path in ['/binGO_revoke_call']:
+            if len(self.server.numbersCalled) != 0:
+                
+                for card in self.server.cards:
+                    card.revokeCall(self.server.numbersCalled[-1], self.server.winCondition)
+
+            self.server.numbersCalled = self.server.numbersCalled[:-1]
+            
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
 
 if __name__ == "__main__":
     db = binGO_classes.Database()

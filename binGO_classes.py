@@ -319,6 +319,49 @@ class Card():
         else:
             return 0
         
+    def revokeCall(self, value, winCondition):
+        i = 0
+
+        # B
+        if value >= 1 and value <= 15:
+            for tileValue in self.bCol:
+                if tileValue[0] == value and winCondition.col[0][i] == 1:
+                    tileValue[1] = 0
+
+                i += 1
+
+        # I
+        elif value >= 16 and value <= 30:
+            for tileValue in self.iCol:
+                if tileValue[0] == value and winCondition.col[1][i] == 1:
+                    tileValue[1] = 0
+
+                i += 1
+
+        # N
+        elif value >= 31 and value <= 45:
+            for tileValue in self.nCol:
+                if tileValue[0] == value and winCondition.col[2][i] == 1:
+                    tileValue[1] = 0
+
+                i += 1
+
+        # G
+        elif value >= 46 and value <= 60:
+            for tileValue in self.gCol:
+                if tileValue[0] == value and winCondition.col[3][i] == 1:
+                    tileValue[1] = 0
+
+                i += 1
+
+        # O
+        elif value >= 61 and value <= 75:
+            for tileValue in self.oCol:
+                if tileValue[0] == value and winCondition.col[4][i] == 1:
+                    tileValue[1] = 0
+
+                i += 1
+        
     def reapplyWin(self, winCondition, numbers):
         for tile in self.bCol:
             tile[1] = 0
