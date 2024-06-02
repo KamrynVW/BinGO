@@ -1,5 +1,5 @@
 # BinGO #
-Version: 1.0
+Version: 1.1
 Launch Date: May 10th, 2024
 
 ## Description ##
