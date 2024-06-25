@@ -508,6 +508,7 @@ class binGoServer(HTTPServer):
         self.numbersCalled = []
         self.locked = False
         self.winningNumber = None
+        self.currentColour = None
         self.filePath = os.path.dirname(os.path.abspath(__file__))
         super().__init__(address, handler)
 
@@ -593,6 +594,15 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(str(returnValue), "utf-8"))
 
+        elif self.path in ['/binGO_get_current_colour']:
+            returnValue = self.server.currentColour
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            self.wfile.write(bytes(str(returnValue), "utf-8"))
+
     def do_POST(self):
         if self.path in ['/binGO_play.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
@@ -607,6 +617,8 @@ class binGoHandler(BaseHTTPRequestHandler):
                 lockStatus = "Lock"
 
             # 1 = Pink, 2 = Green, 3 = Yellow, 4 = Blue, 5 = Orange
+            self.server.currentColour = colour
+
             if colour == 1:
                 html += PAGE_HEADER_PINK
                 html += PAGE_HEADER_P2
@@ -1211,9 +1223,20 @@ class binGoHandler(BaseHTTPRequestHandler):
             nCol = [int(form.getvalue('N1')), int(form.getvalue('N2')), 0, int(form.getvalue('N4')), int(form.getvalue('N5'))]
             gCol = [int(form.getvalue('G1')), int(form.getvalue('G2')), int(form.getvalue('G3')), int(form.getvalue('G4')), int(form.getvalue('G5'))]
             oCol = [int(form.getvalue('O1')), int(form.getvalue('O2')), int(form.getvalue('O3')), int(form.getvalue('O4')), int(form.getvalue('O5'))]
-
             card = binGO_classes.Card(form.getvalue('colour'), int(form.getvalue('id1')), int(form.getvalue('id2')), bCol, iCol, nCol, gCol, oCol)
             db.readCard(card)
+
+            if form.getvalue('colour') == 'pink':
+                self.server.currentColour = 1
+            elif form.getvalue('colour') == 'green':
+                self.server.currentColour = 2
+            elif form.getvalue('colour') == 'yellow':
+                self.server.currentColour = 3
+            elif form.getvalue('colour') == 'blue':
+                self.server.currentColour = 4
+            else:
+                self.server.currentColour = 5
+
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -1282,6 +1305,52 @@ class binGoHandler(BaseHTTPRequestHandler):
             cardCol = form.getvalue("card-col")
             cardIndex = db.getIdOfColour(cardNum, cardCol)
             card = db.writeCard(cardIndex)
+
+            if self.server.currentColour == 1:
+                selectMenu = """<label for="colour">Colour: </label>
+                                    <select id="colour" name="colour">
+                                        <option value="pink" selected>Pink</option>
+                                        <option value="green">Green</option>
+                                        <option value="yellow">Yellow</option>
+                                        <option value="blue">Blue</option>
+                                        <option value="orange">Orange</option> 
+                                    </select>"""
+            elif self.server.currentColour == 2:
+                selectMenu = """<label for="colour">Colour: </label>
+                                    <select id="colour" name="colour">
+                                        <option value="pink">Pink</option>
+                                        <option value="green" selected>Green</option>
+                                        <option value="yellow">Yellow</option>
+                                        <option value="blue">Blue</option>
+                                        <option value="orange">Orange</option> 
+                                    </select>"""
+            elif self.server.currentColour == 3:
+                selectMenu = """<label for="colour">Colour: </label>
+                                    <select id="colour" name="colour">
+                                        <option value="pink">Pink</option>
+                                        <option value="green">Green</option>
+                                        <option value="yellow" selected>Yellow</option>
+                                        <option value="blue">Blue</option>
+                                        <option value="orange">Orange</option> 
+                                    </select>"""
+            elif self.server.currentColour == 4:
+                selectMenu = """<label for="colour">Colour: </label>
+                                    <select id="colour" name="colour">
+                                        <option value="pink">Pink</option>
+                                        <option value="green">Green</option>
+                                        <option value="yellow">Yellow</option>
+                                        <option value="blue" selected>Blue</option>
+                                        <option value="orange">Orange</option> 
+                                    </select>"""
+            else:
+                selectMenu = """<label for="colour">Colour: </label>
+                                    <select id="colour" name="colour">
+                                        <option value="pink">Pink</option>
+                                        <option value="green">Green</option>
+                                        <option value="yellow">Yellow</option>
+                                        <option value="blue">Blue</option>
+                                        <option value="orange" selected>Orange</option> 
+                                    </select>"""
             
             html = f""" <!DOCTYPE html>
                         <html lang="en">
@@ -1510,14 +1579,7 @@ class binGoHandler(BaseHTTPRequestHandler):
                                 <input type="hidden" id="card-num" name="card-num" value="{cardIndex}"/>
                                 <div class="button-holder space-around">
                                     <div>
-                                        <label for="colour">Colour: </label>
-                                        <select id="colour" name="colour">
-                                            <option value="pink" selected>Pink</option>
-                                            <option value="green">Green</option>
-                                            <option value="yellow">Yellow</option>
-                                            <option value="blue">Blue</option>
-                                            <option value="orange">Orange</option> 
-                                        </select>
+                                        {selectMenu}
                                     </div>
                                     <div>
                                         <label for="id1">Middle ID: </label>

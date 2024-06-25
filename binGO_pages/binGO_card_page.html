@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BinGO - Enter New Card</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
         body {
@@ -144,6 +145,28 @@
 
     </style>
     <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: '/binGO_get_current_colour',
+                type: 'GET',
+                success: function(response) {
+                    var colour = parseInt(response);
+                    var div = document.getElementById('colour-select');
+
+                    if(colour === 1) {
+                        div.insertAdjacentHTML('beforeend', '<label for="colour">Colour: </label><select id="colour" name="colour"><option value="pink" selected>Pink</option><option value="green">Green</option><option value="yellow">Yellow</option><option value="blue">Blue</option><option value="orange">Orange</option></select>')
+                    } else if(colour === 2) {
+                        div.insertAdjacentHTML('beforeend', '<label for="colour">Colour: </label><select id="colour" name="colour"><option value="pink">Pink</option><option value="green" selected>Green</option><option value="yellow">Yellow</option><option value="blue">Blue</option><option value="orange">Orange</option></select>')
+                    } else if(colour === 3) {
+                        div.insertAdjacentHTML('beforeend', '<label for="colour">Colour: </label><select id="colour" name="colour"><option value="pink">Pink</option><option value="green">Green</option><option value="yellow" selected>Yellow</option><option value="blue">Blue</option><option value="orange">Orange</option></select>')
+                    } else if(colour === 4) {
+                        div.insertAdjacentHTML('beforeend', '<label for="colour">Colour: </label><select id="colour" name="colour"><option value="pink">Pink</option><option value="green">Green</option><option value="yellow">Yellow</option><option value="blue" selected>Blue</option><option value="orange">Orange</option></select>')
+                    } else {
+                        div.insertAdjacentHTML('beforeend', '<label for="colour">Colour: </label><select id="colour" name="colour"><option value="pink">Pink</option><option value="green">Green</option><option value="yellow">Yellow</option><option value="blue">Blue</option><option value="orange" selected>Orange</option></select>')
+                    }
+                }
+            })
+        })
         function checkSubmit() {
             if (document.getElementById("B1").value.trim() === "") {
                 return 0;
@@ -218,16 +241,7 @@
 <body>
     <form id="form" action="binGO_submit_card.html" method="post">
         <div class="button-holder space-around">
-            <div>
-                <label for="colour">Colour: </label>
-                <select id="colour" name="colour">
-                    <option value="pink" selected>Pink</option>
-                    <option value="green">Green</option>
-                    <option value="yellow">Yellow</option>
-                    <option value="blue">Blue</option>
-                    <option value="orange">Orange</option> 
-                </select>
-            </div>
+            <div id="colour-select"></div>
             <div>
                 <label for="id1">Middle ID: </label>
                 <input class="id-input" id="id1" name="id1" type="number" required />
