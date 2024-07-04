@@ -2,7 +2,9 @@ import binGO_classes
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import cgi
 import os
-import random
+import math
+
+WIN_PROX_PERCENT = 0.40
 
 PAGE_HEADER_P1 = """<!DOCTYPE html>
                     <html lang="en">
@@ -453,23 +455,38 @@ PAGE_AJAX = f""" <script>
                                                     type: 'GET',
                                                     success: function(response) {{
                                                         var middleID = parseInt(response);
-                                                        var winPost = document.getElementById('win-post');
+                                                        var winPost = document.getElementById('algo-div');
 
                                                         $.ajax({{
                                                             url: "/binGO_get_win_call",
                                                             type: 'GET',
                                                             success: function(response) {{
                                                                 var winNumber = parseInt(response);
-
                                                                 if (winPost) {{
-                                                                    winPost.innerHTML = "<div style='background: rgba(39, 40, 44, 0.5); width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + ", Won On: " + winNumber + "</h2></div><hr>"
-                                                                }} else {{
-                                                                    document.getElementById("hr-tag").insertAdjacentHTML("afterend", "<div id='win-post'><div style='background: rgba(39, 40, 44, 0.5); width: 100%; justify-content: center; align-items: center; display: flex;'><h1 class='win-heading'>Winner!</h1></div><div class='win-post'><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + ", Won On: " + winNumber + "</h2></div><hr></div>");
+                                                                    winPost.innerHTML = "<div><h1 class='win-heading'>Winner!</h1><h2 class='id-heading'>Middle ID: " + middleID + ", Back ID: " + backID + ", Won On: " + winNumber + "</h2></div>"
                                                                 }}
                                                             }}
                                                         }})
                                                     }}
                                                 }});
+                                            }}
+                                        }});
+
+                                    }} else {{
+                                        $.ajax({{
+                                            url: "/binGO_win_prox",
+                                            type: 'GET',
+                                            success: function(response) {{
+                                                if(response === "NULL"){{
+                                                    console.log("nu-uh");
+                                                }} else {{
+                                                    var algoDiv = document.getElementById("algo-div");
+                                                    var algoResult = "<h1 style='color: white; font-size:30px; text-shadow: 2px 2px 4px black;'>Closest card needs: " + response + "</h1>";
+
+                                                    if(algoDiv) {{
+                                                        algoDiv.innerHTML = algoResult;
+                                                    }}
+                                                }}
                                             }}
                                         }});
                                     }}
@@ -603,6 +620,32 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(str(returnValue), "utf-8"))
 
+        elif self.path in ['/binGO_win_prox']:
+            missingNumLists = []
+            for card in self.server.cards:
+                missingNumLists.append(card.checkWinProx(self.server.winCondition))
+
+            minimum = len(missingNumLists[0])
+            numLeft = missingNumLists[0]
+
+            for numList in missingNumLists:
+                if len(numList) < minimum:
+                    minimum = len(numList)
+                    numLeft = numList
+
+            totalTilesNeeded = self.server.winCondition.getTotalRequiredTiles()
+            if minimum < math.floor(totalTilesNeeded * WIN_PROX_PERCENT):
+                returnString = ", ".join(map(str, numLeft))
+            else:
+                returnString = "NULL"
+            
+
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+            self.wfile.write(bytes(returnString, "utf-8"))
+
     def do_POST(self):
         if self.path in ['/binGO_play.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
@@ -709,8 +752,14 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <button onclick="revokeCall()" style="padding: 2px; border: 1px solid white; background: #27282c; color: white; font-size: 15px;">Undo</button>
                                     </div>
                                     <br>
+                                    <div style="justify-content: center; align-items: center; display: flex;" id="algo-div"></div>
+                                    <br>
                                     <hr id="hr-tag">
                                     </div>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
                                     <br>
                                     <br>
                                     <br>
@@ -811,8 +860,14 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <button onclick="revokeCall()" style="padding: 2px; border: 1px solid white; background: #27282c; color: white; font-size: 15px;">Undo</button>
                                     </div>
                                     <br>
-                                    </div>
+                                    <div style="justify-content: center; align-items: center; display: flex;" id="algo-div"></div>
+                                    <br>
                                     <hr id="hr-tag">
+                                    </div>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
                                     <br>
                                     <br>
                                     <br>
@@ -913,8 +968,14 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <button onclick="revokeCall()" style="padding: 2px; border: 1px solid white; background: #27282c; color: white; font-size: 15px;">Undo</button>
                                     </div>
                                     <br>
-                                    </div>
+                                    <div style="justify-content: center; align-items: center; display: flex;" id="algo-div"></div>
+                                    <br>
                                     <hr id="hr-tag">
+                                    </div>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
                                     <br>
                                     <br>
                                     <br>
@@ -1015,8 +1076,14 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <button onclick="revokeCall()" style="padding: 2px; border: 1px solid white; background: #27282c; color: white; font-size: 15px;">Undo</button>
                                     </div>
                                     <br>
-                                    </div>
+                                    <div style="justify-content: center; align-items: center; display: flex;" id="algo-div"></div>
+                                    <br>
                                     <hr id="hr-tag">
+                                    </div>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
                                     <br>
                                     <br>
                                     <br>
@@ -1117,8 +1184,14 @@ class binGoHandler(BaseHTTPRequestHandler):
                                         <button onclick="revokeCall()" style="padding: 2px; border: 1px solid white; background: #27282c; color: white; font-size: 15px;">Undo</button>
                                     </div>
                                     <br>
-                                    </div>
+                                    <div style="justify-content: center; align-items: center; display: flex;" id="algo-div"></div>
+                                    <br>
                                     <hr id="hr-tag">
+                                    </div>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
                                     <br>
                                     <br>
                                     <br>

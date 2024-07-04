@@ -387,6 +387,50 @@ class Card():
         else:
             return 0
 
+    def checkWinProx(self, winCondition):
+        i = 0
+        missingNum = []
+
+        for tile in self.bCol:
+            if tile[1] == 0 and winCondition.col[0][i] == 1:
+                missingNum.append(tile[0])
+
+            i += 1
+
+        i = 0
+
+        for tile in self.iCol:
+            if tile[1] == 0 and winCondition.col[1][i] == 1:
+                missingNum.append(tile[0])
+
+            i += 1
+
+        i = 0
+
+        for tile in self.nCol:
+            if tile[1] == 0 and winCondition.col[2][i] == 1:
+                missingNum.append(tile[0])
+
+            i += 1
+
+        i = 0
+
+        for tile in self.gCol:
+            if tile[1] == 0 and winCondition.col[3][i] == 1:
+                missingNum.append(tile[0])
+
+            i += 1
+
+        i = 0
+
+        for tile in self.oCol:
+            if tile[1] == 0 and winCondition.col[4][i] == 1:
+                missingNum.append(tile[0])
+
+            i += 1
+
+        return missingNum
+
 class WinCondition():
     def __init__(self, name, col1, col2, col3, col4, col5):
         self.name = name
@@ -400,6 +444,15 @@ class WinCondition():
         result += f"{self.col[0][4]} {self.col[1][4]} {self.col[2][4]} {self.col[3][4]} {self.col[4][4]}\n"
 
         return result
+    
+    def getTotalRequiredTiles(self):
+        total = 0
+
+        for col in self.col:
+            for bit in col:
+                total += bit
+
+        return total
     
     def checkWin(self, card):
         bColBits = []
@@ -422,3 +475,4 @@ class WinCondition():
             return 1
         else:
             return 0
+        

@@ -1,6 +1,6 @@
 # BinGO #
-Version: 1.11
-Launch Date: May 10th, 2024
+Version: 2.0
+Release Date: July 4th, 2024
 
 ## Description ##
 This program creates a Python server and database that allows you to store and play many bingo cards subsequentially.
