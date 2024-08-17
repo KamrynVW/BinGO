@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>BinGO - Enter New Win</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
         body {
@@ -82,9 +83,47 @@
             color: whitesmoke;
         }
     </style>
-    <title>BinGO - Enter New Win</title>
+
+    <script>
+        // Flip a tile to the opposite colour upon clicking.
+        function flipTile(element, key) {
+            var currentColour = element.style.backgroundColor;
+
+            if (currentColour === 'slategray' || currentColour === '') {
+                element.style.backgroundColor = 'darkblue';
+                document.getElementById(key).value = 1;
+            } else {
+                element.style.backgroundColor = 'slategray';
+                document.getElementById(key).value = 0
+            }
+        }
+
+        // Check that a name has been provided before submitting.
+        function checkSubmit() {
+            if (document.getElementById("name").value.trim() === "") {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
+
+        // Submit the form to the server upon checking if all information has been provided.
+        function submitForm() {
+            if (checkSubmit()) {
+                document.getElementById("form").submit();
+            } else {
+                if (document.getElementById("error-div")) {
+                    document.getElementById("error-div").remove();
+                    document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
+                } else {
+                    document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
+                }
+            }
+        }
+    </script>
 </head>
 <body>
+    <!-- Create an invisible form corresponding to the grid of clickable divs for submission. -->
     <form id="form" action="binGO_submit_win.html" method="post">
         <input id="B1" name="B1" type="hidden" value="0"/>
         <input id="I1" name="I1" type="hidden" value="0"/>
@@ -111,14 +150,18 @@
         <input id="N5" name="N5" type="hidden" value="0"/>
         <input id="G5" name="G5" type="hidden" value="0"/>
         <input id="O5" name="O5" type="hidden" value="0"/>
+
+        <!-- A space on the top of the screen to enter the name of the win. -->
         <div style="justify-content: center; align-items: center; display: flex;">
             <label for="name">Name of Win: </label>
             <input class="name-of-win" id="name" name="name" type="text" required />
         </div>
 
+        <!-- Separate the name submission and 5x5 grid. -->
         <br>
         <hr id="error-post">
 
+        <!-- Create a 5x5 grid of clickable divs that represent the required tiles of a win condition. -->
         <div class="container">
             <div class="grid-container">
                 <div class="grid-item" onclick="flipTile(this, 'B1')"></div>
@@ -149,46 +192,11 @@
             </div>
         </div>
         
+        <!-- Allow the user to submit the win condition or abandon and return to the main menu. -->
         <div style="justify-content: center; align-items: center; display: flex;">
             <a style="--clr:steelblue" onclick="submitForm()"><span>Submit</span></a>
             <a style="--clr:red" href="binGO_start_page.html"><span>Main Menu</span></a>
         </div>
     </form>
-    
-
-    <script>
-        function flipTile(element, key) {
-            var currentColour = element.style.backgroundColor;
-
-            if (currentColour === 'slategray' || currentColour === '') {
-                element.style.backgroundColor = 'darkblue';
-                document.getElementById(key).value = 1;
-            } else {
-                element.style.backgroundColor = 'slategray';
-                document.getElementById(key).value = 0
-            }
-        }
-
-        function checkSubmit() {
-            if (document.getElementById("name").value.trim() === "") {
-                return 0;
-            } else {
-                return 1;
-            }
-        }
-
-        function submitForm() {
-            if (checkSubmit()) {
-                document.getElementById("form").submit();
-            } else {
-                if (document.getElementById("error-div")) {
-                    document.getElementById("error-div").remove();
-                    document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
-                } else {
-                    document.getElementById("error-post").insertAdjacentHTML("afterend", "<div id='error-div' style='justify-content: center; align-items: center; display: flex;'><h1 style='color: red; font-size: 20px; text-shadow: 2px 2px 4px black;'>Error: Missing content</h1></div>");
-                }
-            }
-        }
-    </script>
 </body>
 </html>

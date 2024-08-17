@@ -80,7 +80,6 @@
             justify-content: space-around;
         }
 
-
         @keyframes colour_animation {
             0%    {border: 3px solid var(--colour1); box-shadow: 0 0 35px var(--colour1);}
             20%   {border: 3px solid var(--colour2); box-shadow: 0 0 35px var(--colour2);}
@@ -90,21 +89,66 @@
             100%  {border: 3px solid var(--colour1); box-shadow: 0 0 35px var(--colour1);}
         }
     </style>
+
+    <script>
+        //Submit the form with the set colour pink.
+        function submitPink() {
+            document.getElementById("colour").value = 1
+            document.getElementById("form").submit()
+        }
+
+        //Submit the form with the set colour green.
+        function submitGreen() {
+            document.getElementById("colour").value = 2
+            document.getElementById("form").submit()
+        }
+
+        //Submit the form with the set colour yellow.
+        function submitYellow() {
+            document.getElementById("colour").value = 3
+            document.getElementById("form").submit()
+        }
+
+        //Submit the form with the set colour blue.
+        function submitBlue() {
+            document.getElementById("colour").value = 4
+            document.getElementById("form").submit()
+        }
+
+        //Submit the form with the set colour orange.
+        function submitOrange() {
+            document.getElementById("colour").value = 5
+            document.getElementById("form").submit()
+        }
+
+        //Take the user to the card creation page.
+        function submitCard() {
+            document.getElementById("card-form").submit();
+        }
+
+        //Take the user to the create win condition page.
+        function submitWin() {
+            document.getElementById("win-form").submit();
+        }
+    </script>
 </head>
+
 <body>
+    <!-- Create an animated circular title header at just below the top of the screen. -->
     <br>
-    
     <div style="justify-content: center; align-items: center; display: flex;">
         <div class="title-div">
             <h1 class="title">BinGO</h1>
         </div>
     </div>
 
+    <!-- Separate the play buttons and title banner. -->
     <br>
     <hr>
     <br>
     <br>
 
+    <!-- Provide user with 5 different colour options with animated buttons equally spaced in a line. -->
     <form id="form" action="binGO_play.html" method="post">
         <input id="colour" type="hidden" name="colour"/>
         <div class="button-holder space-around">
@@ -116,12 +160,14 @@
         </div>     
     </form>
 
+    <!-- Separate the play buttons and creation buttons. -->
     <br>
     <br>
     <hr>
     <br>
     <br>
 
+    <!-- Provide user with buttons to create cards and win conditons in a line below play buttons. -->
     <p style="color: p"></p>
     <div class="button-holder space-around">
         <form id="card-form" action="binGO_card_page.html" method="post">
@@ -132,40 +178,5 @@
             <a style="--clr:magenta" onclick="submitWin()"><span>Add Win</span></a>
         </form>
     </div>
-    
-    <script>
-        function submitPink() {
-            document.getElementById("colour").value = 1
-            document.getElementById("form").submit()
-        }
-
-        function submitGreen() {
-            document.getElementById("colour").value = 2
-            document.getElementById("form").submit()
-        }
-
-        function submitYellow() {
-            document.getElementById("colour").value = 3
-            document.getElementById("form").submit()
-        }
-
-        function submitBlue() {
-            document.getElementById("colour").value = 4
-            document.getElementById("form").submit()
-        }
-
-        function submitOrange() {
-            document.getElementById("colour").value = 5
-            document.getElementById("form").submit()
-        }
-
-        function submitCard() {
-            document.getElementById("card-form").submit();
-        }
-
-        function submitWin() {
-            document.getElementById("win-form").submit();
-        }
-    </script>
 </body>
 </html>

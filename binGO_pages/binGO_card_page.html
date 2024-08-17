@@ -145,6 +145,7 @@
 
     </style>
     <script>
+        //Check the currently selected colour and set the colour selecting option to it as default.
         $(document).ready(function() {
             $.ajax({
                 url: '/binGO_get_current_colour',
@@ -167,6 +168,8 @@
                 }
             })
         })
+
+        //Check that each number has been entered into the form before submitting
         function checkSubmit() {
             if (document.getElementById("B1").value.trim() === "") {
                 return 0;
@@ -224,6 +227,8 @@
                 return 1;
             }
         }
+
+        //Check that all data has been provided, and then submit the card to the server.
         function submitForm() {
             if (checkSubmit()) {
                 document.getElementById("form").submit();
@@ -238,8 +243,12 @@
         }
     </script>
 </head>
+
 <body>
+    <!-- Enclose the entire page in a form for the sake of later submission. -->
     <form id="form" action="binGO_submit_card.html" method="post">
+
+        <!-- Hold all non-call related data in a line at the top. -->
         <div class="button-holder space-around">
             <div id="colour-select"></div>
             <div>
@@ -252,9 +261,11 @@
             </div>
         </div>
 
+        <!-- Separate the card entry form and where it will potentially display if info is missing. -->
         <br>
         <hr id="error-post">
 
+        <!-- Place all BINGO number boxes in a 5x5 grid, with alphabetical headers for comprehension. -->
         <div class="container">
             <div class="grid-container">
                 <div class="grid-item"><p>B</p></div>
@@ -293,6 +304,7 @@
     
     <br>
 
+    <!-- Allow submission or returning to main menu if you no longer want to create a card. -->
     <div style="justify-content: center; align-items: center; display: flex;">
         <a style="--clr:steelblue" onclick="submitForm()"><span>Submit</span></a>
         <a style="--clr:red" href="binGO_start_page.html"><span>Main Menu</span></a>

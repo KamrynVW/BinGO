@@ -4,8 +4,12 @@ import cgi
 import os
 import math
 
+# Constants for ease of reading when dynamically creating HTML pages.
+
+# Decimal value representing the percentage of missing numbers required to show the algorithm to the user.
 WIN_PROX_PERCENT = 0.40
 
+# The first part of the main gameplay HTML page, used to define styles.
 PAGE_HEADER_P1 = """<!DOCTYPE html>
                     <html lang="en">
                         <head>
@@ -212,6 +216,7 @@ PAGE_HEADER_P1 = """<!DOCTYPE html>
                                     background: rgba(39, 40, 44, 0.5);
                                 }"""
 
+# CSS classes to be used if the colour is pink.
 PAGE_HEADER_PINK = """  .item-1 {
                             background-color: palevioletred;    
                         }
@@ -241,6 +246,7 @@ PAGE_HEADER_PINK = """  .item-1 {
                             box-shadow: 0 0 25px palevioletred;
                         }"""
 
+# CSS classes to be used if the colour is green.
 PAGE_HEADER_GREEN = """ .item-1 {
                             background-color: lime;    
                         }
@@ -270,6 +276,7 @@ PAGE_HEADER_GREEN = """ .item-1 {
                             box-shadow: 0 0 25px lime;
                         }"""
 
+# CSS classes to be used if the colour is yellow.
 PAGE_HEADER_YELLOW = """ .item-1 {
                             background-color: yellow;
                         }
@@ -299,6 +306,7 @@ PAGE_HEADER_YELLOW = """ .item-1 {
                             box-shadow: 0 0 25px yellow;
                         }"""
 
+# CSS classes to be used if the colour is blue.
 PAGE_HEADER_BLUE = """ .item-1 {
                             background-color: blue;    
                         }
@@ -328,6 +336,7 @@ PAGE_HEADER_BLUE = """ .item-1 {
                             box-shadow: 0 0 25px blue;
                         }"""
 
+# CSS classes to be used if the colour is orange.
 PAGE_HEADER_ORANGE = """ .item-1 {
                             background-color: orangered;
                         }
@@ -357,10 +366,12 @@ PAGE_HEADER_ORANGE = """ .item-1 {
                             box-shadow: 0 0 25px orangered;
                         }"""
 
+# The second part of the main gameplay HTML page, simply for closing the style and providing the page title.
 PAGE_HEADER_P2 = """</style>
                             <title>BinGO - Play</title>
                         </head>"""
 
+# The main gameplays JavaScript segment, which checks for wins, displays all cards, and flips called numbers.
 PAGE_AJAX = f""" <script>
                     $(document).ready(function(){{
                               
@@ -500,6 +511,7 @@ PAGE_AJAX = f""" <script>
 
                 </script>"""
 
+# A version of the main page for when no cards have been entered on the chosen colour.
 PAGE_NO_CARDS = """ <body>
                         <h1 class="heading">No cards have been created for this colour.</h1><br>
                         <h2 class="heading2">You can create a new card, or return to the main menu.</h2>
@@ -517,7 +529,20 @@ PAGE_NO_CARDS = """ <body>
                     </body>
                 </html>"""
 
+# Class: BinGO Server
+#
+# Creates a Python server with several server variables
+# for continuous use of different BinGO elements.
+
 class binGoServer(HTTPServer):
+
+    # Method: Initialize
+    #
+    # Initialize the server with a list for all cards, a base win condition of all tiles being required
+    # (used for free play), a winner card attribute to be filled upon winning, a list of numbers called
+    # for revoking and reapplication of different win conditions, a locked variable to signify if
+    # changes/deletions of cards should be allowed or not, the winning number to be assigned upon winning,
+    # the currently played colour for defaulting purposes, and a filepath to ensure smooth database connection.
     def __init__(self, address, handler):
         self.cards = []
         self.winCondition = binGO_classes.WinCondition("winner", [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1])
@@ -529,11 +554,20 @@ class binGoServer(HTTPServer):
         self.filePath = os.path.dirname(os.path.abspath(__file__))
         super().__init__(address, handler)
 
+# Class: BinGO Handler
+#
+# Handles all do_GET and do_POST requests made by the server
+# during operations. Handles all pages and BINGO gameplay.
+
 class binGoHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
+        # Serve the landing page to the server.
         if self.path == '/' or self.path in ['/binGO_start_page.html']:
+
+            # Set the winning card to none for future games.
             self.server.winnerCard = None
+
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
@@ -542,6 +576,7 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
+        # Serve the card creation page to the server.
         elif self.path in ['/binGO_card_page.html']:
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -551,6 +586,7 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
+        # Serve the win condition creation page to the server.
         elif self.path in ['/binGO_win_page.html']:
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -560,6 +596,7 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
+        # Serve a boolean bit representing if a card has won or not.
         elif self.path in ['/binGO_get_win_bit']:
             if self.server.winnerCard is not None:
                 returnValue =  1
@@ -572,8 +609,10 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(str(returnValue), "utf-8"))
 
+        # Serve the middle ID of the card that won (if a card has won).
         elif self.path in ['/binGO_get_middle_id']:
-            returnValue = self.server.winnerCard.middleId
+            if self.server.winnerCard is not None:
+                returnValue = self.server.winnerCard.middleId
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -581,8 +620,10 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(str(returnValue), "utf-8"))
 
+        # Serve the back ID of the card that won (if a card has won).
         elif self.path in ['/binGO_get_back_id']:
-            returnValue = self.server.winnerCard.backId
+            if self.server.winnerCard is not None:
+                returnValue = self.server.winnerCard.backId
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -590,6 +631,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(str(returnValue), "utf-8"))
 
+        # Toggle a lock on the page to not allow for any edits or deletions of cards.
         elif self.path in ['/binGO_toggle_lock']:
             if self.server.locked is False:
                 self.server.locked = True
@@ -602,8 +644,10 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes("NaN", "utf-8"))
 
+        # Serve the call that the winning card won on.
         elif self.path in ['/binGO_get_win_call']:
-            returnValue = self.server.winningNumber
+            if self.server.winningNumber is not None:
+                returnValue = self.server.winningNumber
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -611,8 +655,10 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(str(returnValue), "utf-8"))
 
+        # Serve the current colour of the cards being played.
         elif self.path in ['/binGO_get_current_colour']:
-            returnValue = self.server.currentColour
+            if self.server.currentColour is not None:
+                returnValue = self.server.currentColour
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -620,33 +666,48 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(str(returnValue), "utf-8"))
 
+        # Find the closest card to winning, and serve a formatted list of all needed numbers on that card.
         elif self.path in ['/binGO_win_prox']:
+        
+            # Check the win proximity of each card being played.
             missingNumLists = []
             for card in self.server.cards:
                 missingNumLists.append(card.checkWinProx(self.server.winCondition))
 
+            # Assign the first card as the minimum
             minimum = len(missingNumLists[0])
             numLeft = missingNumLists[0]
 
+            # Iterate through each card and find the lowest through a linear search.
             for numList in missingNumLists:
                 if len(numList) < minimum:
                     minimum = len(numList)
                     numLeft = numList
 
+            # Get the total tiles needed to win, and if the minimum is less than that multiplied by the set
+            # winning proximity percentage, then create and serve a formatted string of numbers needed to win.
             totalTilesNeeded = self.server.winCondition.getTotalRequiredTiles()
             if minimum < math.floor(totalTilesNeeded * WIN_PROX_PERCENT):
                 returnString = ", ".join(map(str, numLeft))
             else:
                 returnString = "NULL"
             
-
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
             self.wfile.write(bytes(returnString, "utf-8"))
 
+        # If no page is found, return 404.
+        else:
+            self.send_response(404)
+            self.end_headers()
+            self.wfile.write( bytes( "404: %s not found" % self.path, "utf-8" ) )
+
     def do_POST(self):
+
+        # Serve a dynamically created HTML page for main gameplay, with a call submission, grid of in-play
+        # cards, and end game button.
         if self.path in ['/binGO_play.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
 
@@ -1209,9 +1270,11 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(html, "utf-8"))
 
+        # Get all of the cards from the server and format them all into an HTML display to be displayed to the user.
         elif self.path in ['/binGO_get_cards']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
 
+            # Check if a call has been submitted and add it to the numbers called if true.
             if form.getvalue("value") is None:
                 num = 0
             else:
@@ -1220,8 +1283,11 @@ class binGoHandler(BaseHTTPRequestHandler):
             if num != 0:
                 self.server.numbersCalled.append(num)
 
-            cardHtml = ""
+            # Use an incrementing value to give each HTML card a unique ID separate from the database.
             i = 1
+
+            # Flip each card according to the call, and then create it into an HTML div to be sent to the server.
+            cardHtml = ""
             for card in self.server.cards:
                 win = card.flipTileBit(num, self.server.winCondition)
 
@@ -1271,6 +1337,7 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(bytes(cardHtml, "utf-8"))
 
+        # Serve the card creation page to the server.
         elif self.path in ['/binGO_card_page.html']:
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -1280,6 +1347,7 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
+        # Serve the win condition creation page to the server.
         elif self.path in ['/binGO_win_page.html']:
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -1289,16 +1357,22 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
+        # Submit a created card to the database and return the user to the main menu.
         elif self.path in ['/binGO_submit_card.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+
+            # Format the provided values into a list format that a card object can be created with.
             bCol = [int(form.getvalue('B1')), int(form.getvalue('B2')), int(form.getvalue('B3')), int(form.getvalue('B4')), int(form.getvalue('B5'))]
             iCol = [int(form.getvalue('I1')), int(form.getvalue('I2')), int(form.getvalue('I3')), int(form.getvalue('I4')), int(form.getvalue('I5'))]
             nCol = [int(form.getvalue('N1')), int(form.getvalue('N2')), 0, int(form.getvalue('N4')), int(form.getvalue('N5'))]
             gCol = [int(form.getvalue('G1')), int(form.getvalue('G2')), int(form.getvalue('G3')), int(form.getvalue('G4')), int(form.getvalue('G5'))]
             oCol = [int(form.getvalue('O1')), int(form.getvalue('O2')), int(form.getvalue('O3')), int(form.getvalue('O4')), int(form.getvalue('O5'))]
+
+            # Create the card object and write it to the database.
             card = binGO_classes.Card(form.getvalue('colour'), int(form.getvalue('id1')), int(form.getvalue('id2')), bCol, iCol, nCol, gCol, oCol)
             db.readCard(card)
 
+            # Set the current colour of the game to the colour provided by the form.
             if form.getvalue('colour') == 'pink':
                 self.server.currentColour = 1
             elif form.getvalue('colour') == 'green':
@@ -1319,14 +1393,18 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, "rb") as f:
                 self.wfile.write(f.read())
 
+        # Submit a created win condition to the database and return the user to the main menu.
         elif self.path in ['/binGO_submit_win.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
+
+            # Format the provided values into a list to create a win condition.
             bCol = [int(form.getvalue('B1')), int(form.getvalue('B2')), int(form.getvalue('B3')), int(form.getvalue('B4')), int(form.getvalue('B5'))]
             iCol = [int(form.getvalue('I1')), int(form.getvalue('I2')), int(form.getvalue('I3')), int(form.getvalue('I4')), int(form.getvalue('I5'))]
             nCol = [int(form.getvalue('N1')), int(form.getvalue('N2')), int(form.getvalue('N3')), int(form.getvalue('N4')), int(form.getvalue('N5'))]
             gCol = [int(form.getvalue('G1')), int(form.getvalue('G2')), int(form.getvalue('G3')), int(form.getvalue('G4')), int(form.getvalue('G5'))]
             oCol = [int(form.getvalue('O1')), int(form.getvalue('O2')), int(form.getvalue('O3')), int(form.getvalue('O4')), int(form.getvalue('O5'))]
 
+            # Create the win condition, write it to the database, and set the game's win condition to the newly created one.
             winCondition = binGO_classes.WinCondition(form.getvalue('name'), bCol, iCol, nCol, gCol, oCol)
             db.readWin(winCondition)
             self.server.winCondition = winCondition
@@ -1339,7 +1417,10 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, "rb") as f:
                 self.wfile.write(f.read())
 
+        # End the bingo game and return the user to the main menu.
         elif self.path in ['/binGO_end_game.html']:
+
+            # Set the called numbers, card list, and winner card to None/empty list for future games.
             self.server.cards = []
             self.server.numbersCalled = []
             self.server.winnerCard = None
@@ -1352,6 +1433,8 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, "rb") as f:
                 self.wfile.write(f.read())
 
+        # Change the currently set win on the server to the newly selected one, and change all cards
+        # according to the newly provided win condition.
         elif self.path in ['/binGO_change_win']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
 
@@ -1371,6 +1454,7 @@ class binGoHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(bytes(nameOfWin, "utf-8"))
 
+        # Serve a dynamically created HTML page to edit or delete the selected card.
         elif self.path in ['/binGO_edit_delete_card.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
 
@@ -1722,15 +1806,19 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(bytes(html, "utf-8"))
 
+        # Get the card ID from the submitted form, edit it within the database with the new values, and return the
+        # user to the main menu.
         elif self.path in ['/binGO_change_card']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
 
+            # Format the columns into the database format for changing.
             bCol = f"{form.getvalue('B1')},{form.getvalue('B2')},{form.getvalue('B3')},{form.getvalue('B4')},{form.getvalue('B5')}"
             iCol = f"{form.getvalue('I1')},{form.getvalue('I2')},{form.getvalue('I3')},{form.getvalue('I4')},{form.getvalue('I5')}"
             nCol = f"{form.getvalue('N1')},{form.getvalue('N2')},0,{form.getvalue('N4')},{form.getvalue('N5')}"
             gCol = f"{form.getvalue('G1')},{form.getvalue('G2')},{form.getvalue('G3')},{form.getvalue('G4')},{form.getvalue('G5')}"
             oCol = f"{form.getvalue('O1')},{form.getvalue('O2')},{form.getvalue('O3')},{form.getvalue('O4')},{form.getvalue('O5')}"
 
+            # Change the card within the database, and set the winnerCard to None to revoke the card as a winner (until future check).
             db.changeCard(int(form.getvalue("card-num")), int(form.getvalue("id1")), int(form.getvalue("id2")), bCol, iCol, nCol, gCol, oCol, form.getvalue('colour'))
             self.server.winnerCard = None
 
@@ -1742,9 +1830,11 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
+        # Get the card ID from the submitted form, delete it from the database, and return the user to the main menu.
         elif self.path in ['/binGO_delete_card']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
-            
+
+            # Delete the win condition from the database at the provided ID.    
             db.deleteCard(int(form.getvalue("d-card-num")))
 
             self.send_response(200)
@@ -1755,6 +1845,7 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
+        # Serve a dynamically created HTML page to edit or delete the selected win condition.
         elif self.path in ['/binGO_edit_delete_win.html']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
 
@@ -1985,15 +2076,19 @@ class binGoHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(bytes(html, "utf-8"))
 
+        # Get the win ID from the submitted form, edit it within the database with the new values, and return the
+        # user to the main menu.
         elif self.path in ['/binGO_edit_win']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
 
+            # Create the column strings from the values in the form.
             bCol = f"{form.getvalue('B1')},{form.getvalue('B2')},{form.getvalue('B3')},{form.getvalue('B4')},{form.getvalue('B5')}"
             iCol = f"{form.getvalue('I1')},{form.getvalue('I2')},{form.getvalue('I3')},{form.getvalue('I4')},{form.getvalue('I5')}"
             nCol = f"{form.getvalue('N1')},{form.getvalue('N2')},{form.getvalue('N3')},{form.getvalue('N4')},{form.getvalue('N5')}"
             gCol = f"{form.getvalue('G1')},{form.getvalue('G2')},{form.getvalue('G3')},{form.getvalue('G4')},{form.getvalue('G5')}"
             oCol = f"{form.getvalue('O1')},{form.getvalue('O2')},{form.getvalue('O3')},{form.getvalue('O4')},{form.getvalue('O5')}"
 
+            # Change the card at the ID provided with the new name and columns.
             db.changeWin(int(form.getvalue("win-id")), form.getvalue("name"), bCol, iCol, nCol, gCol, oCol)
 
             self.send_response(200)
@@ -2004,11 +2099,12 @@ class binGoHandler(BaseHTTPRequestHandler):
             with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
 
+        # Get the win ID from the submitted form, delete it from the database, and return the user to the main menu.
         elif self.path in ['/binGO_delete_win']:
             form = cgi.FieldStorage( fp=self.rfile, headers=self.headers, environ = { 'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': self.headers['Content-Type'],})
             
+            # Delete the win condition at the provided ID from the database.
             id = int(form.getvalue('win-id'))
-
             db.deleteWin(id)
 
             self.send_response(200)
@@ -2018,20 +2114,33 @@ class binGoHandler(BaseHTTPRequestHandler):
             file_path = os.path.join(self.server.filePath, 'binGO_pages', 'binGO_start_page.html')
             with open(file_path, 'rb') as f:
                 self.wfile.write(f.read())
-
+            
+        # Get the last number called from the server list, and revoke it from all cards.
         elif self.path in ['/binGO_revoke_call']:
-            if len(self.server.numbersCalled) != 0:
-                
+            if len(self.server.numbersCalled) != 0:          
                 for card in self.server.cards:
                     card.revokeCall(self.server.numbersCalled[-1], self.server.winCondition)
 
+            # Cut the revoked number from the list of numbers called.
             self.server.numbersCalled = self.server.numbersCalled[:-1]
+
+            # Set the winner card to None in case card was a winner (will be rechecked afterwards)
+            self.server.winnerCard = None
             
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
 
+        # If no page is found, return 404.
+        else:
+            self.send_response(404)
+            self.end_headers()
+            self.wfile.write( bytes( "404: %s not found" % self.path, "utf-8" ) )
+
+# Initialize a database and run the server and serve it until closure.
 if __name__ == "__main__":
     db = binGO_classes.Database()
     httpd = binGoServer(('localhost', 8000), binGoHandler)
+    print("Running server on localhost:8000, type that into any browser to open.")
     httpd.serve_forever()
+    
